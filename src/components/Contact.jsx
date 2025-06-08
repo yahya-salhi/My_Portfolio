@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
+import { toast } from "react-hot-toast";
 
 import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
@@ -32,29 +33,29 @@ const Contact = () => {
 
     // Form validation
     if (!form.name.trim()) {
-      alert("Please enter your name.");
+      toast.error("Please enter your name.");
       return;
     }
 
     if (!form.email.trim()) {
-      alert("Please enter your email address.");
+      toast.error("Please enter your email address.");
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      alert("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     if (!form.message.trim()) {
-      alert("Please enter your message.");
+      toast.error("Please enter your message.");
       return;
     }
 
     if (form.message.trim().length < 10) {
-      alert("Please enter a message with at least 10 characters.");
+      toast.error("Please enter a message with at least 10 characters.");
       return;
     }
 
@@ -77,7 +78,7 @@ const Contact = () => {
       .then(
         () => {
           setLoading(false);
-          alert(
+          toast.success(
             "Thank you! Your message has been sent successfully. I will get back to you as soon as possible."
           );
 
@@ -93,23 +94,23 @@ const Contact = () => {
 
           // Provide helpful error messages based on error type
           if (error.status === 422) {
-            alert(
+            toast.error(
               "Email template configuration issue detected. Your message couldn't be sent due to a template setup problem. Please contact me directly at pcclub10@gmail.com or try again later."
             );
           } else if (error.status === 400) {
-            alert(
+            toast.error(
               "There was an issue with the form data. Please check all fields and try again."
             );
           } else if (error.status === 401) {
-            alert(
+            toast.error(
               "Email service authentication error. Please contact me directly at pcclub10@gmail.com"
             );
           } else if (error.status === 403) {
-            alert(
+            toast.error(
               "Email service access denied. Please contact me directly at pcclub10@gmail.com"
             );
           } else {
-            alert(
+            toast.error(
               "Something went wrong while sending your message. Please try again or contact me directly at pcclub10@gmail.com"
             );
           }
