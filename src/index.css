@@ -22,6 +22,32 @@
   body {
     overflow-x: hidden;
   }
+
+  /* Ensure sections are visible on mobile */
+  section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Fix for potential mobile rendering issues */
+  .react-tilt {
+    transform: none !important;
+  }
+
+  /* Force Skills section visibility on mobile */
+  #skills {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 100vh !important;
+  }
+
+  /* Ensure Skills content is visible */
+  #skills * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 }
 
 .hash-span {
