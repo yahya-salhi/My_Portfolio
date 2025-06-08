@@ -119,10 +119,10 @@ const Contact = () => {
   };
 
   return (
-    <div className="xl:mt-12 max-w-7xl mx-auto">
+    <div className="mt-8 sm:mt-12 xl:mt-12 max-w-7xl mx-auto px-4 sm:px-6">
       <motion.div
         variants={slideIn("up", "tween", 0.2, 1)}
-        className="bg-black-100 p-8 rounded-2xl"
+        className="bg-black-100 p-4 sm:p-6 lg:p-8 rounded-2xl"
       >
         <p className={styles.sectionSubText}>Get in touch</p>
         <h3 className={styles.sectionHeadText}>Contact.</h3>
@@ -263,12 +263,12 @@ const Contact = () => {
           <h4 className="text-white font-bold text-[20px] mb-6">
             Professional Documents
           </h4>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             <button
               onClick={() => {
                 generateHTMLResume();
               }}
-              className="bg-tertiary py-3 px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center gap-2"
+              className="bg-tertiary py-3 px-4 sm:px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto"
             >
               <span>📄</span>
               View Resume (PDF)
@@ -277,7 +277,7 @@ const Contact = () => {
               onClick={() => {
                 generateTextResume();
               }}
-              className="bg-tertiary py-3 px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center gap-2"
+              className="bg-tertiary py-3 px-4 sm:px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto"
             >
               <span>📝</span>
               Download Text Resume
@@ -286,7 +286,7 @@ const Contact = () => {
               onClick={() => {
                 window.open("https://github.com/yahya-salhi", "_blank");
               }}
-              className="bg-tertiary py-3 px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center gap-2"
+              className="bg-tertiary py-3 px-4 sm:px-6 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto"
             >
               <span>💻</span>
               View Portfolio

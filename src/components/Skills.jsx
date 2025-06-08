@@ -69,7 +69,7 @@ const SkillBar = ({ skill, delay }) => (
 const SkillCategory = ({ category, skills, index }) => (
   <motion.div
     variants={fadeIn("up", "spring", index * 0.2, 0.75)}
-    className="bg-tertiary p-6 rounded-2xl w-full lg:w-[48%]"
+    className="bg-tertiary p-4 sm:p-6 rounded-2xl w-full lg:w-[48%]"
   >
     <h3 className="text-white font-bold text-[24px] mb-6 text-center">
       {category}
@@ -99,13 +99,13 @@ const Skills = () => {
           variants={fadeIn("", "", 0.1, 1)}
           className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
         >
-          Here's an overview of my technical skills and proficiency levels. 
-          I'm constantly improving and learning new technologies to stay current 
+          Here's an overview of my technical skills and proficiency levels. I'm
+          constantly improving and learning new technologies to stay current
           with industry standards and best practices.
         </motion.p>
       </div>
 
-      <div className="mt-20 flex flex-wrap gap-7 justify-between">
+      <div className="mt-12 sm:mt-20 flex flex-col gap-4 sm:gap-7 sm:flex-row sm:flex-wrap sm:justify-between">
         {Object.entries(skillsData).map(([category, skills], index) => (
           <SkillCategory
             key={category}
@@ -141,7 +141,9 @@ const Skills = () => {
           </div>
           <div className="text-center">
             <div className="text-[40px] mb-2">⚡</div>
-            <h4 className="text-white font-semibold mb-2">Performance Optimization</h4>
+            <h4 className="text-white font-semibold mb-2">
+              Performance Optimization
+            </h4>
             <p className="text-secondary text-[14px]">
               Optimizing applications for speed and efficiency
             </p>
@@ -155,14 +157,18 @@ const Skills = () => {
           </div>
           <div className="text-center">
             <div className="text-[40px] mb-2">🤝</div>
-            <h4 className="text-white font-semibold mb-2">Team Collaboration</h4>
+            <h4 className="text-white font-semibold mb-2">
+              Team Collaboration
+            </h4>
             <p className="text-secondary text-[14px]">
               Working effectively in team environments and code reviews
             </p>
           </div>
           <div className="text-center">
             <div className="text-[40px] mb-2">📚</div>
-            <h4 className="text-white font-semibold mb-2">Continuous Learning</h4>
+            <h4 className="text-white font-semibold mb-2">
+              Continuous Learning
+            </h4>
             <p className="text-secondary text-[14px]">
               Staying updated with latest technologies and best practices
             </p>

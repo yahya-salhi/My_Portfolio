@@ -14,7 +14,7 @@ import {
 const StatCard = ({ title, value, icon, delay }) => (
   <motion.div
     variants={fadeIn("up", "spring", delay, 0.75)}
-    className="bg-tertiary p-6 rounded-2xl w-full sm:w-[250px]"
+    className="bg-tertiary p-4 sm:p-6 rounded-2xl w-full xs:w-[280px] sm:w-[250px]"
   >
     <div className="flex items-center justify-between">
       <div>
@@ -191,7 +191,7 @@ const GitHubStats = () => {
       </div>
 
       {/* GitHub Profile Stats */}
-      <div className="mt-20 flex flex-wrap gap-7 justify-center">
+      <div className="mt-12 sm:mt-20 flex flex-wrap gap-4 sm:gap-7 justify-center">
         <StatCard
           title="Public Repositories"
           value={profile?.public_repos || 0}
@@ -249,7 +249,7 @@ const GitHubStats = () => {
             </h3>
           </motion.div>
 
-          <div className="flex flex-wrap gap-7 justify-center">
+          <div className="flex flex-wrap gap-4 sm:gap-7 justify-center">
             <StatCard
               title="Push Events"
               value={stats.pushEvents}

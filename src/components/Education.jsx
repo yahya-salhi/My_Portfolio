@@ -102,7 +102,7 @@ const Education = () => {
         <p className={styles.sectionSubText}>My learning journey</p>
         <h2 className={styles.sectionHeadText}>Education.</h2>
       </motion.div>
-      <div className="mt-20 flex flex-col">
+      <div className="mt-12 sm:mt-20 flex flex-col">
         <VerticalTimeline>
           {educationData.map((education, index) => (
             <EducationCard key={`education-${index}`} education={education} />
