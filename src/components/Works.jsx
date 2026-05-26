@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from "react";
-import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
@@ -15,40 +13,33 @@ const ProjectCard = ({
   tags,
   image,
   source_code_link,
-}) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const cardContent = (
-    <>
+}) => (
+  <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
+    <div className="bg-tertiary p-4 sm:p-5 rounded-2xl w-full xs:w-[320px] sm:w-[360px] transition-transform hover:scale-[1.02]">
       <div className="relative w-full h-[230px]">
         <img
           src={image}
-          alt="project_image"
+          alt={`${name} project preview`}
+          width={360}
+          height={230}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover rounded-2xl"
         />
 
         <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-          <div
+          <button
+            type="button"
             onClick={() => window.open(source_code_link, "_blank")}
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer border-0"
+            aria-label={`View ${name} source code on GitHub`}
           >
             <img
               src={github}
-              alt="source code"
+              alt=""
               className="w-1/2 h-1/2 object-contain"
             />
-          </div>
+          </button>
         </div>
       </div>
 
@@ -71,42 +62,16 @@ const ProjectCard = ({
           </p>
         ))}
       </div>
-    </>
-  );
-
-  return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
-      {isMobile ? (
-        <div className="bg-tertiary p-4 sm:p-5 rounded-2xl w-full xs:w-[320px] sm:w-[360px]">
-          {cardContent}
-        </div>
-      ) : (
-        <Tilt
-          options={{
-            max: 45,
-            scale: 1,
-            speed: 450,
-          }}
-        >
-          <div className="bg-tertiary p-4 sm:p-5 rounded-2xl w-full xs:w-[320px] sm:w-[360px]">
-            {cardContent}
-          </div>
-        </Tilt>
-      )}
-    </motion.div>
-  );
-};
+    </div>
+  </motion.div>
+);
 
 const Works = () => {
-  // Add debugging
-  console.log("Works component rendering");
-  console.log("Projects data:", projects);
-
   return (
     <div className="w-full">
       <motion.div variants={textVariant()}>
-        <p className={`${styles.sectionSubText} `}>My work</p>
-        <h2 className={`${styles.sectionHeadText}`}>Projects.</h2>
+        <p className={styles.sectionSubText}>My work</p>
+        <h2 className={styles.sectionHeadText}>Projects.</h2>
       </motion.div>
 
       <div className="w-full flex">
@@ -116,9 +81,7 @@ const Works = () => {
         >
           Following projects showcases my skills and experience through
           real-world examples of my work. Each project is briefly described with
-          links to code repositories and live demos in it. It reflects my
-          ability to solve complex problems, work with different technologies,
-          and manage projects effectively.
+          links to code repositories and live demos in it.
         </motion.p>
       </div>
 

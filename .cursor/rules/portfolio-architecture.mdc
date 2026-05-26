@@ -1,0 +1,31 @@
+---
+description: Portfolio SPA architecture and data sources
+alwaysApply: true
+---
+
+# Portfolio architecture
+
+## Structure
+
+- Single-page app: `src/App.jsx` composes sections in order
+- Section HOC: `src/hoc/SectionWrapper.jsx` — Framer `whileInView`, hash `id` for nav
+- Mobile: `SkillsSimple` when viewport ≤ 768px; else `Skills`
+
+## Data
+
+- Static content: `src/constants/index.js` (nav, services, experiences, projects, testimonials)
+- Live GitHub: `src/utils/github.js` — used by `GitHubStats.jsx` only unless user approves Works integration
+- Resume generators: `src/utils/resume.js`
+
+## 3D
+
+- Hero uses `ComputersCanvas` (lazy-loaded from `src/components/canvas/`)
+- GLTF assets live in `public/desktop_pc/` and `public/planet/` — use root `public/` only (not `src/public/`)
+
+## Routing
+
+- `BrowserRouter` for logo link only; navigation is hash-based (`#about`, `#skills`, etc.)
+
+## Build
+
+- Vite `base: "/My_Portfolio/"` for GitHub Pages

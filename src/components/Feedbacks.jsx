@@ -33,11 +33,25 @@ const FeedbackCard = ({
           </p>
         </div>
 
-        <img
-          src={image}
-          alt={`feedback_by-${name}`}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt=""
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <div
+            className="w-10 h-10 rounded-full bg-[#915EFF] flex items-center justify-center text-white text-sm font-bold shrink-0"
+            aria-hidden
+          >
+            {name
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </div>
+        )}
       </div>
     </div>
   </motion.div>
@@ -65,4 +79,4 @@ const Feedbacks = () => {
   );
 };
 
-export default SectionWrapper(Feedbacks, "");
+export default SectionWrapper(Feedbacks, "testimonials");

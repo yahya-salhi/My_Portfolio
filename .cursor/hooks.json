@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/session-start.mjs"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "node .cursor/hooks/before-submit-prompt.mjs"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/before-shell-execution.mjs",
+        "failClosed": true
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/after-file-edit.mjs"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/audit-shell.mjs",
+        "matcher": "Shell"
+      }
+    ]
+  }
+}

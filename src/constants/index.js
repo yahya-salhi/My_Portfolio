@@ -15,15 +15,10 @@ import {
   git,
   figma,
   docker,
-  meta,
-  starbucks,
-  tesla,
-  shopify,
-  carrent,
-  jobit,
-  tripguide,
   threejs,
 } from "../assets";
+
+const projectImage = (file) => `${import.meta.env.BASE_URL}projects/${file}`;
 
 export const navLinks = [
   {
@@ -35,8 +30,12 @@ export const navLinks = [
     title: "Skills",
   },
   {
+    id: "experience",
+    title: "Experience",
+  },
+  {
     id: "work",
-    title: "Work",
+    title: "Projects",
   },
   {
     id: "education",
@@ -58,7 +57,7 @@ const services = [
     icon: web,
   },
   {
-    title: "ReactJs  Developer",
+    title: "React Developer",
     icon: mobile,
   },
   {
@@ -174,27 +173,24 @@ const experiences = [
 const testimonials = [
   {
     testimonial:
-      "Yahya delivered exceptional work on our React project. His attention to detail and modern development practices exceeded our expectations.",
-    name: "Ahmed Hassan",
-    designation: "Project Manager",
-    company: "Tech Solutions",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
+      "Yahya delivered a polished React application on schedule. Communication was clear and the codebase was easy to hand off.",
+    name: "Client — Web App",
+    designation: "Freelance",
+    company: "Upwork",
   },
   {
     testimonial:
-      "Working with Yahya was a great experience. He built a responsive and interactive web application that perfectly matched our requirements.",
-    name: "Sarah Johnson",
-    designation: "Product Owner",
-    company: "Digital Agency",
-    image: "https://randomuser.me/api/portraits/women/2.jpg",
+      "Strong full-stack skills: responsive UI, solid API integration, and attention to detail on edge cases.",
+    name: "Client — MERN Project",
+    designation: "Product",
+    company: "Remote",
   },
   {
     testimonial:
-      "Yahya's expertise in React and TypeScript helped us modernize our application. His code quality and documentation are outstanding.",
-    name: "Mohamed Ali",
-    designation: "Lead Developer",
-    company: "StartupHub",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
+      "Professional, proactive, and quick to iterate from feedback. I would work with Yahya again.",
+    name: "Client — Portfolio",
+    designation: "Collaboration",
+    company: "Direct",
   },
 ];
 
@@ -217,7 +213,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: carrent, // Using placeholder image
+    image: projectImage("carrent.webp"),
     source_code_link: "https://github.com/yahya-salhi/UpKeepPro",
   },
   {
@@ -238,7 +234,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: jobit, // Using placeholder image
+    image: projectImage("jobit.webp"),
     source_code_link: "https://github.com/yahya-salhi/mern-app",
   },
   {
@@ -259,7 +255,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: tripguide, // Using placeholder image
+    image: projectImage("tripguide.webp"),
     source_code_link: "https://github.com/yahya-salhi/worldwise",
   },
   {
@@ -280,7 +276,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: carrent, // Using placeholder image
+    image: projectImage("carrent.webp"),
     source_code_link: "https://github.com/yahya-salhi/save_gaza",
   },
   {
@@ -301,7 +297,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: jobit, // Using placeholder image
+    image: projectImage("jobit.webp"),
     source_code_link: "https://github.com/yahya-salhi/React-Quiz",
   },
   {
@@ -322,7 +318,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: tripguide, // Using placeholder image
+    image: projectImage("tripguide.webp"),
     source_code_link: "https://github.com/yahya-salhi/UsePopCorn",
   },
 ];

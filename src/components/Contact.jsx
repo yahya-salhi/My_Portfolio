@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
 import { toast } from "react-hot-toast";
 
 import { styles } from "../styles";
@@ -59,21 +58,33 @@ const Contact = () => {
       return;
     }
 
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      toast.error(
+        "Contact form is not configured. Please email me directly at pcclub10@gmail.com."
+      );
+      return;
+    }
+
     setLoading(true);
 
-    // EmailJS configuration - Real email functionality enabled
-    emailjs
-      .send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_p4clatt",
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_default",
-        {
-          from_name: form.name,
-          to_name: "Yahya Salhi",
-          from_email: form.email,
-          to_email: "pcclub10@gmail.com",
-          message: form.message,
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "default_key"
+    import("@emailjs/browser")
+      .then(({ default: emailjs }) =>
+        emailjs.send(
+          serviceId,
+          templateId,
+          {
+            from_name: form.name,
+            to_name: "Yahya Salhi",
+            from_email: form.email,
+            to_email: "pcclub10@gmail.com",
+            message: form.message,
+          },
+          publicKey
+        )
       )
       .then(
         () => {

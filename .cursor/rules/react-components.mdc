@@ -1,0 +1,29 @@
+---
+description: React component patterns for portfolio sections
+globs: src/**/*.{jsx,js}
+alwaysApply: false
+---
+
+# React components
+
+## Conventions
+
+- Functional components; export default at bottom
+- Wrap sections with `SectionWrapper(Component, "sectionId")` unless Skills uses custom wrapper
+- Animations: import variants from `src/utils/motion.js` (`fadeIn`, `textVariant`, `staggerContainer`)
+- Shared layout classes: `src/styles.js`
+
+## Section IDs (nav targets)
+
+- `about`, `skills`, `experience`, `work` (projects), `education`, `github`, `contact`
+- Keep `navLinks` in constants aligned with SectionWrapper ids
+
+## Performance
+
+- Lazy-load heavy 3D (`ComputersCanvas`) with `React.lazy` + `Suspense`
+- Avoid new `console.log` in production paths
+
+## Do not
+
+- Re-enable unused canvas exports (`EarthCanvas`, `BallCanvas`, `StarsCanvas`) without user request
+- Add `Tech.jsx` stub to App without implementation

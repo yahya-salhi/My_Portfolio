@@ -1,55 +1,62 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import {
-  About,
-  Contact,
-  Experience,
-  Education,
-  Feedbacks,
-  GitHubStats,
-  Hero,
-  Navbar,
-  Skills,
-  SkillsSimple,
-  Works,
-} from "./components";
+import { About, Hero, Navbar } from "./components";
+import SectionFallback from "./components/SectionFallback";
+
+const Skills = lazy(() => import("./components/Skills"));
+const SkillsSimple = lazy(() => import("./components/SkillsSimple"));
+const Experience = lazy(() => import("./components/Experience"));
+const Education = lazy(() => import("./components/Education"));
+const Works = lazy(() => import("./components/Works"));
+const GitHubStats = lazy(() => import("./components/GitHubStats"));
+const Feedbacks = lazy(() => import("./components/Feedbacks"));
+const Contact = lazy(() => import("./components/Contact"));
+
+const LazySection = ({ children }) => (
+  <Suspense fallback={<SectionFallback />}>{children}</Suspense>
+);
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
+    const mq = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
-  console.log("App rendering, isMobile:", isMobile);
-
   return (
-    <BrowserRouter>
-      <div className="relative z-0 bg-primary">
-        <Toaster position="top-right" />
-        <div className="bg-hero-pattern bg-cover bg-no-repeat bg-center">
-          <Navbar />
-          <Hero />
-        </div>
-        <About />
-        {/* Use simple Skills component on mobile for guaranteed visibility */}
-        {isMobile ? <SkillsSimple /> : <Skills />}
-        <Experience />
-        <Education />
-        <Works />
-        <GitHubStats />
-        <Feedbacks />
-        <Contact />
+    <main className="relative z-0 bg-primary">
+      <Toaster position="top-right" />
+      <div className="bg-hero-pattern bg-cover bg-no-repeat bg-center">
+        <Navbar />
+        <Hero />
       </div>
-    </BrowserRouter>
+      <About />
+      <LazySection>
+        {isMobile ? <SkillsSimple /> : <Skills />}
+      </LazySection>
+      <LazySection>
+        <Experience />
+      </LazySection>
+      <LazySection>
+        <Education />
+      </LazySection>
+      <LazySection>
+        <Works />
+      </LazySection>
+      <LazySection>
+        <GitHubStats />
+      </LazySection>
+      <LazySection>
+        <Feedbacks />
+      </LazySection>
+      <LazySection>
+        <Contact />
+      </LazySection>
+    </main>
   );
 }
 

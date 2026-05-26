@@ -1,11 +1,14 @@
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
-import { ComputersCanvas } from "./canvas";
+import DeferredComputersCanvas from "./canvas/DeferredComputersCanvas";
 
 const Hero = () => {
   return (
-    <section className={`relative w-full h-screen mx-auto`}>
+    <section
+      className="relative w-full h-screen mx-auto"
+      aria-label="Introduction"
+    >
       <div
         className={`absolute inset-0 top-[120px]  max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
       >
@@ -16,21 +19,20 @@ const Hero = () => {
 
         <div>
           <h1 className={`${styles.heroHeadText} text-white`}>
-            Hi, I'm <span className="text-[#915EFF]">Yahya Salhi</span>
+            Hi, I&apos;m <span className="text-[#915EFF]">Yahya Salhi</span>
           </h1>
           <p className={`${styles.heroSubText} mt-5 text-white-100`}>
-            I'm a passionate Full Stack Developer{" "}
-            <br className="sm:block hidden" />
-            specializing in React, Node.js, and modern web technologies
+            Full stack developer building production-ready apps with React,
+            Node.js, TypeScript, and MongoDB — from Tunisia, available remotely.
           </p>
         </div>
       </div>
       <br></br>
 
-      <ComputersCanvas />
+      <DeferredComputersCanvas />
 
       <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center ">
-        <a href="#about">
+        <a href="#about" aria-label="Scroll to about section">
           <div className="w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2 mt-32">
             <motion.div
               animate={{

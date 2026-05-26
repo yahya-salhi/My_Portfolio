@@ -1,0 +1,25 @@
+---
+description: Secrets and environment variable handling
+alwaysApply: true
+---
+
+# Security
+
+## Environment
+
+- `.env` is gitignored — never commit it
+- EmailJS keys only via `import.meta.env.VITE_EMAILJS_*`
+- Do not add hardcoded fallback service IDs or API keys in `Contact.jsx`
+
+## Contact form
+
+- If env vars are missing, show a clear user-facing error; do not send with placeholder keys
+
+## Git
+
+- Hooks may block destructive commands (`git push --force`, `git reset --hard`)
+- Do not commit files matching `.env` or secret patterns
+
+## DECISION_LOG
+
+- Record decisions only; never paste secret values
