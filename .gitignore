@@ -25,5 +25,9 @@ dist-ssr
 .env
 !.env.example
 
-# Documentation (keep repo code-only on GitHub)
+# Documentation — only README on GitHub
 *.md
+!README.md
+
+# Cursor config stays local
+.cursor/
