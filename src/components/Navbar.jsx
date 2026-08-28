@@ -1,11 +1,47 @@
-import { useEffect, useState } from "react";
-import { styles } from "../styles";
+import { useEffect, useRef, useState } from "react";
 import { navLinks } from "../constants";
-import { logo, menu, close } from "../assets";
+import { logo } from "../assets";
+
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const MenuIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    aria-hidden="true"
+  >
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    aria-hidden="true"
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
 
 const Navbar = () => {
   const [active, setActive] = useState("");
-  const [toggle, setToggle] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
+  const firstLinkRef = useRef(null);
 
   useEffect(() => {
     const sectionIds = navLinks.map((link) => link.id);
@@ -30,85 +66,160 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handleNavClick = (title) => {
-    setActive(title);
-    setToggle(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen) firstLinkRef.current?.focus();
+  }, [menuOpen]);
+
+  const handleBrandClick = (event) => {
+    event.preventDefault();
+    setActive("");
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
   };
 
+  const handleLinkClick = (title) => {
+    setActive(title);
+    setMenuOpen(false);
+  };
+
+  const navLinkClasses = (isActive) =>
+    `relative inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-sm font-medium transition-colors duration-150 ${
+      isActive ? "text-text-primary" : "text-text-secondary hover:text-text-primary"
+    }`;
+
   return (
-    <nav
-      className={`${styles.paddingX} w-full flex items-center py-5 fixed top-0 z-20 bg-primary/80 backdrop-blur-sm`}
-      aria-label="Main navigation"
-    >
-      <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-        <a
-          href="#"
-          className="flex items-center gap-2"
-          onClick={(e) => {
-            e.preventDefault();
-            setActive("");
-            window.scrollTo(0, 0);
-          }}
-        >
-          <img src={logo} alt="Yahya Salhi logo" className="w-9 h-9 object-contain" />
-          <p className="text-white text-[18px] font-bold cursor-pointer flex">
-            yahya &nbsp;
-            <span className="sm:block hidden">| Full stack JS</span>
-          </p>
-        </a>
-        <ul className="list-none hidden sm:flex flex-row gap-10">
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                className={`${
-                  active === link.title ? "text-white" : "text-secondary"
-                } hover:text-white text-[18px] font-medium cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#915EFF] rounded px-1`}
-                onClick={() => handleNavClick(link.title)}
-              >
-                {link.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <div className="sm:hidden flex flex-1 justify-end items-center">
-          <button
-            type="button"
-            className="p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#915EFF] rounded"
-            aria-label={toggle ? "Close menu" : "Open menu"}
-            aria-expanded={toggle}
-            onClick={() => setToggle(!toggle)}
+    <header className="fixed inset-x-0 top-0 z-50">
+      <nav
+        className={`border-b bg-bg-glass backdrop-blur-md transition-shadow duration-300 ${
+          scrolled ? "border-border-light shadow-lg" : "border-border"
+        }`}
+        aria-label="Main navigation"
+      >
+        <div className="mx-auto flex h-[var(--layout-navbar-height)] max-w-[var(--layout-max-width)] items-center justify-between px-6 md:px-8 lg:px-12">
+          <a
+            href="#"
+            onClick={handleBrandClick}
+            className="flex items-center gap-3 rounded-sm"
           >
-            <img
-              src={toggle ? close : menu}
-              alt=""
-              className="w-[28px] h-[28px] object-contain"
-            />
-          </button>
-          <div
-            className={`${
-              !toggle ? "hidden" : "flex"
-            } p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-10 rounded-xl`}
-          >
-            <ul className="list-none flex justify-end items-start flex-col gap-4">
-              {navLinks.map((link) => (
+            <img src={logo} alt="" className="h-9 w-9 object-contain" />
+            <span className="flex flex-col justify-center">
+              <span className="text-lg font-bold leading-none text-text-primary">
+                yahya
+              </span>
+              <span className="mt-1 hidden text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.1em] text-text-secondary lg:block">
+                AI Engineer · Full-Stack Developer
+              </span>
+            </span>
+          </a>
+
+          <ul className="hidden items-center gap-3 md:flex">
+            {navLinks.map((link) => {
+              const isActive = active === link.title;
+              return (
                 <li key={link.id}>
                   <a
                     href={`#${link.id}`}
-                    className={`${
-                      active === link.title ? "text-white" : "text-secondary"
-                    } cursor-pointer font-poppins font-medium text-[16px] focus:outline-none focus-visible:text-white`}
-                    onClick={() => handleNavClick(link.title)}
+                    onClick={() => handleLinkClick(link.title)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={navLinkClasses(isActive)}
                   >
                     {link.title}
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-accent-primary"
+                      />
+                    )}
                   </a>
                 </li>
-              ))}
-            </ul>
+              );
+            })}
+          </ul>
+
+          <div ref={menuRef} className="relative md:hidden">
+            <button
+              ref={toggleRef}
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav-menu"
+              className="flex h-11 w-11 items-center justify-center rounded-sm text-text-primary transition-colors duration-150 hover:text-accent-secondary"
+            >
+              {menuOpen ? <CloseIcon /> : <MenuIcon />}
+            </button>
+
+            {menuOpen && (
+              <div
+                id="mobile-nav-menu"
+                className="glass absolute right-0 top-[calc(100%+0.75rem)] w-[min(17rem,calc(100vw-3rem))] rounded-lg p-2"
+              >
+                <ul className="flex flex-col">
+                  {navLinks.map((link, index) => {
+                    const isActive = active === link.title;
+                    return (
+                      <li key={link.id}>
+                        <a
+                          ref={index === 0 ? firstLinkRef : undefined}
+                          href={`#${link.id}`}
+                          onClick={() => handleLinkClick(link.title)}
+                          aria-current={isActive ? "page" : undefined}
+                          className={`flex min-h-11 items-center rounded-sm px-3 text-sm font-medium transition-colors duration-150 ${
+                            isActive
+                              ? "bg-bg-glass text-text-primary"
+                              : "text-text-secondary hover:bg-bg-glass-hover hover:text-text-primary"
+                          }`}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={
+                              isActive
+                                ? "mr-2 h-1.5 w-1.5 rounded-full bg-accent-secondary"
+                                : "mr-2 h-1.5 w-1.5 rounded-full bg-transparent"
+                            }
+                          />
+                          {link.title}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 
