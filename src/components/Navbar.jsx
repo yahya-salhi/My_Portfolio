@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { navLinks } from "../constants";
-import { logo } from "../assets";
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -129,15 +128,7 @@ const Navbar = () => {
             onClick={handleBrandClick}
             className="flex items-center gap-3 rounded-sm transition-opacity hover:opacity-80"
           >
-            <img src={logo} alt="" className="h-9 w-9 object-contain" />
-            <span className="flex flex-col justify-center">
-              <span className="text-lg font-bold leading-none text-text-primary">
-                yahya
-              </span>
-              <span className="mt-1 hidden text-[0.6875rem] font-semibold uppercase leading-none tracking-widest text-text-secondary lg:block">
-                AI Engineer · Full-Stack Developer
-              </span>
-            </span>
+            <img src="/logo.svg" alt="Yahya Salhi logo" className="h-9 w-auto object-contain" />
           </a>
 
           <ul className="hidden items-center gap-3 md:flex">
