@@ -14,6 +14,11 @@
   --color-bg-glass-hover: rgba(255, 255, 255, 0.08);
   --color-bg-glass-active: rgba(255, 255, 255, 0.12);
 
+  /* Terminal traffic-light palette (macOS window chrome) */
+  --color-terminal-close: #ff5f56;
+  --color-terminal-min: #ffbd2e;
+  --color-terminal-max: #27c93f;
+
   /* Accent colors (AI-themed electric palette) */
   --color-accent-primary: #7c3aed;
   --color-accent-secondary: #06b6d4;
@@ -33,6 +38,9 @@
   --color-border-light: rgba(255, 255, 255, 0.12);
   --color-border-accent: rgba(124, 58, 237, 0.3);
   --color-border-accent-solid: #7c3aed;
+
+  /* Gradients (single owner for the recurring violet→cyan accent gradient) */
+  --gradient-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
 
   /* Semantic colors */
   --color-success: #10b981;
@@ -182,43 +190,6 @@
 }
 
 /* ==========================================================================
-   Typography helpers
-   ========================================================================== */
-
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-.text-gradient-fallback {
-  color: var(--color-accent-tertiary);
-}
-
-/* ==========================================================================
-   Gradients
-   ========================================================================== */
-
-.primary-gradient {
-  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-}
-
-.hero-gradient {
-  background: radial-gradient(
-      ellipse at 20% 50%,
-      rgba(124, 58, 237, 0.12) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      ellipse at 80% 50%,
-      rgba(6, 182, 212, 0.08) 0%,
-      transparent 50%
-    );
-}
-
-/* ==========================================================================
    Reduced motion
    ========================================================================== */
 
@@ -234,6 +205,121 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Semantic visual module (F-01+)
+   Named states that own each repeated visual decision. Future sections
+   reference these class names instead of writing raw gradients/glows.
+   All values resolve to tokens; the accent gradient lives in --gradient-accent.
+   ========================================================================== */
+
+@layer components {
+  /* Ambient page / section gradients */
+  .hero-gradient {
+    background: radial-gradient(
+        ellipse at 20% 50%,
+        rgba(124, 58, 237, 0.12) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 80% 50%,
+        rgba(6, 182, 212, 0.08) 0%,
+        transparent 50%
+      );
+  }
+
+  .primary-gradient {
+    background: var(--gradient-accent);
+  }
+
+  .text-gradient-fallback {
+    color: var(--color-accent-tertiary);
+  }
+
+  /* Accent gradient surfaces */
+  .accent-gradient {
+    background: var(--gradient-accent);
+  }
+
+  .text-gradient {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Glowing accent dot (status / active indicator) */
+  .accent-dot {
+    background: var(--gradient-accent);
+    box-shadow: 0 0 8px var(--color-accent-glow-cyan),
+      0 0 20px var(--color-accent-glow-cyan);
+  }
+
+  /* Vertical gradient hairline (decorative accent bar) */
+  .accent-bar {
+    background: linear-gradient(
+      to bottom,
+      var(--color-accent-primary),
+      var(--color-accent-secondary),
+      transparent
+    );
+  }
+
+  /* 1px gradient border ring (e.g. scroll cue / chevron wrapper) */
+  .gradient-border {
+    background: var(--gradient-accent);
+    padding: 1px;
+  }
+
+  /* Reusable glass surface (semantic elevation) */
+  .surface {
+    background: var(--color-bg-glass);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .surface-hover:hover {
+    background: var(--color-bg-glass-hover);
+    border-color: var(--color-border-light);
+  }
+
+  .surface-accent:hover {
+    border-color: var(--color-border-accent);
+    box-shadow: var(--shadow-lg), 0 0 20px var(--color-accent-glow);
+  }
+
+  /* Terminal window (signature hero code/CLI surface) */
+  .terminal-window {
+    background: linear-gradient(
+      135deg,
+      rgba(124, 58, 237, 0.06),
+      rgba(6, 182, 212, 0.04)
+    );
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 40px rgba(124, 58, 237, 0.12),
+      0 0 80px rgba(6, 182, 212, 0.05);
+  }
+
+  .terminal-dot {
+    border-radius: var(--radius-full);
+  }
+
+  .terminal-dot--close {
+    background: var(--color-terminal-close);
+  }
+
+  .terminal-dot--min {
+    background: var(--color-terminal-min);
+  }
+
+  .terminal-dot--max {
+    background: var(--color-terminal-max);
   }
 }
 

@@ -150,12 +150,7 @@ const Navbar = () => {
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-x-3 -bottom-0.5 mx-auto h-1 w-1 rounded-full"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary))",
-                          boxShadow: "0 0 6px var(--color-accent-glow-cyan)",
-                        }}
+                        className="accent-dot absolute inset-x-3 -bottom-0.5 mx-auto h-1 w-1 rounded-full"
                       />
                     )}
                   </a>

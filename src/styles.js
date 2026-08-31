@@ -1,3 +1,22 @@
+/**
+ * LEGACY MIGRATION MODULE (temporary)
+ *
+ * Owns the raw class strings that pre-token legacy sections still depend on.
+ * This is the only place these legacy decisions may live. As each section is
+ * redesigned onto the semantic foundation (tokens + `@layer components` states
+ * in src/index.css), delete the entry here and the `import { styles }` from
+ * that section. When every consumer below is gone, delete this file entirely.
+ *
+ * Consumers (as of the semantic refactor):
+ *   - src/hoc/SectionWrapper.jsx        (styles.padding)
+ *   - src/components/Works.jsx          (sectionSubText / sectionHeadText)
+ *   - src/components/GitHubStats.jsx    (sectionSubText / sectionHeadText)
+ *   - src/components/Education.jsx      (sectionSubText / sectionHeadText)
+ *   - src/components/Feedbacks.jsx      (padding / paddingX / section*)
+ *   - src/components/SectionFallback.jsx (padding)
+ *   - src/components/Experience.jsx     (sectionSubText / sectionHeadText)
+ *   - src/components/Contact.jsx        (sectionSubText / sectionHeadText)
+ */
 const styles = {
   paddingX: "sm:px-16 px-4",
   paddingY: "sm:py-16 py-6",

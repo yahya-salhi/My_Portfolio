@@ -43,22 +43,8 @@ const ChevronDownIcon = () => (
 
 const AccentBar = () => (
   <div className="flex flex-col items-center" aria-hidden="true">
-    <span
-      className="mb-2 h-2 w-2 rounded-full"
-      style={{
-        background: "var(--color-accent-secondary)",
-        boxShadow:
-          "0 0 8px var(--color-accent-glow-cyan), 0 0 20px var(--color-accent-glow-cyan)",
-      }}
-    />
-    <span
-      className="w-px flex-1"
-      style={{
-        background:
-          "linear-gradient(to bottom, var(--color-accent-primary), var(--color-accent-secondary), transparent)",
-        minHeight: "120px",
-      }}
-    />
+    <span className="accent-dot mb-2 h-2 w-2 rounded-full" />
+    <span className="accent-bar w-px flex-1" style={{ minHeight: "120px" }} />
   </div>
 );
 
@@ -91,20 +77,14 @@ const TerminalView = () => {
 
   return (
     <div
-      className="w-full overflow-hidden rounded-xl border border-border-light"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(6, 182, 212, 0.04))",
-        boxShadow:
-          "0 8px 40px rgba(124, 58, 237, 0.12), 0 0 80px rgba(6, 182, 212, 0.05)",
-      }}
+      className="terminal-window w-full overflow-hidden"
       role="region"
       aria-label="Terminal demonstration"
     >
       <div className="flex items-center gap-2 border-b border-border bg-bg-secondary/60 px-4 py-2.5">
-        <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-        <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-        <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
+        <span className="terminal-dot terminal-dot--close h-3 w-3" />
+        <span className="terminal-dot terminal-dot--min h-3 w-3" />
+        <span className="terminal-dot terminal-dot--max h-3 w-3" />
         <span className="mx-auto text-xs font-medium text-text-muted">
           zsh
         </span>
@@ -112,19 +92,12 @@ const TerminalView = () => {
 
       <div className="p-5 font-mono text-sm leading-relaxed">
         <div>
-          <span className="text-[#27c93f]">➜</span>{" "}
+          <span className="text-terminal-max">➜</span>{" "}
           <span className="text-text-secondary">~</span>{" "}
           <span className="text-text-primary">
             {cmd.slice(0, typed)}
             {!reduced && !done && (
-              <span
-                className="ml-px inline-block w-0.5 align-middle"
-                style={{
-                  height: "1em",
-                  background:
-                    "linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary))",
-                }}
-              />
+              <span className="accent-gradient ml-px inline-block w-0.5 align-middle" style={{ height: "1em" }} />
             )}
           </span>
         </div>
@@ -227,12 +200,7 @@ const Hero = () => {
       <a
         href="#about"
         aria-label="Scroll to About section"
-        className="absolute bottom-8 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-text-primary"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary))",
-          padding: "1px",
-        }}
+        className="gradient-border absolute bottom-8 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-text-primary"
       >
         <span className="flex h-full w-full items-center justify-center rounded-full bg-bg-primary">
           <ChevronDownIcon />
