@@ -1,10 +1,9 @@
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { About, Hero, Navbar } from "./components";
 import SectionFallback from "./components/SectionFallback";
 
 const Skills = lazy(() => import("./components/Skills"));
-const SkillsSimple = lazy(() => import("./components/SkillsSimple"));
 const Experience = lazy(() => import("./components/Experience"));
 const Education = lazy(() => import("./components/Education"));
 const Works = lazy(() => import("./components/Works"));
@@ -17,16 +16,6 @@ const LazySection = ({ children }) => (
 );
 
 function App() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
   return (
     <main className="relative z-0 bg-primary">
       <Toaster position="top-right" />
@@ -34,7 +23,7 @@ function App() {
       <Hero />
       <About />
       <LazySection>
-        {isMobile ? <SkillsSimple /> : <Skills />}
+        <Skills />
       </LazySection>
       <LazySection>
         <Experience />

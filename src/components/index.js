@@ -2,7 +2,6 @@ import Hero from "./Hero";
 import Navbar from "./Navbar";
 import About from "./About";
 import Skills from "./Skills";
-import SkillsSimple from "./SkillsSimple";
 import Experience from "./Experience";
 import Education from "./Education";
 import Works from "./Works";
@@ -15,7 +14,6 @@ export {
   Navbar,
   About,
   Skills,
-  SkillsSimple,
   Experience,
   Education,
   Works,

@@ -120,6 +120,87 @@ const proofPoints = [
   },
 ];
 
+const skillCategories = [
+  {
+    id: "ai",
+    title: "AI & Intelligent Systems",
+    accent: "primary",
+    evidence: "Claude 3.5 · GPT-4o · secure document analysis",
+    skills: [
+      "Agentic AI",
+      "RAG",
+      "LLMs",
+      "Prompt Engineering",
+      "Computer Vision",
+      "Anthropic Claude",
+      "Python",
+    ],
+  },
+  {
+    id: "fullstack",
+    title: "Full-Stack Development",
+    accent: "secondary",
+    evidence: "production apps · PostgreSQL · real-time systems",
+    skills: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Node.js",
+      "PostgreSQL",
+      "MongoDB",
+      "GraphQL",
+      "REST APIs",
+      "WebSocket",
+      "Redux Toolkit",
+      "Zustand",
+      "TanStack Query",
+      "Tailwind CSS",
+      "shadcn/ui",
+    ],
+  },
+  {
+    id: "infra",
+    title: "Infrastructure & DevOps",
+    accent: "primary",
+    evidence: "deployed services · containerized workloads",
+    skills: [
+      "Docker",
+      "Kubernetes",
+      "Git",
+      "GitHub",
+      "CI/CD",
+    ],
+  },
+  {
+    id: "embedded",
+    title: "Embedded & Hardware",
+    accent: "secondary",
+    evidence: "Project TITANZ · 250Hz sensor-fusion · PID loop",
+    skills: [
+      "Embedded C",
+      "C++",
+      "ESP32",
+      "Arduino",
+      "ATmega328P",
+      "IoT",
+      "UAV Flight Dynamics",
+      "Sensor Fusion",
+      "PID Control",
+    ],
+  },
+  {
+    id: "leadership",
+    title: "Training & Leadership",
+    accent: "primary",
+    evidence: "50+ staff trained at the Ministry of Defense",
+    skills: [
+      "Technical Training",
+      "Mentoring",
+      "Curriculum Development",
+    ],
+  },
+];
+
 const technologies = [
   {
     name: "HTML 5",
@@ -377,6 +458,7 @@ export {
   services,
   stackLayers,
   proofPoints,
+  skillCategories,
   technologies,
   experiences,
   testimonials,
