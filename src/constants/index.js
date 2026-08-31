@@ -53,20 +53,70 @@ export const navLinks = [
 
 const services = [
   {
-    title: "Web Developer",
-    icon: web,
+    title: "Agentic AI & RAG Pipelines",
+    description:
+      "Design Agentic AI and RAG pipelines with Claude, GPT-4o, and Gemini for secure document analysis and reasoning over complex datasets.",
+    tag: "AI",
   },
   {
-    title: "React Developer",
-    icon: mobile,
+    title: "Full-Stack Production Apps",
+    description:
+      "Ship production full-stack apps with Next.js, React, Node.js, and Python (FastAPI) on PostgreSQL and Supabase.",
+    tag: "WEB",
   },
   {
-    title: "NodeJs Developer",
-    icon: backend,
+    title: "Hardware ↔ Software Bridge",
+    description:
+      "Bridge hardware and software — from ESP32 telemetry dashboards to custom UAV flight logic in C.",
+    tag: "EMBED",
   },
   {
-    title: "NextJs Developer",
-    icon: creator,
+    title: "Problem to Shipped System",
+    description:
+      "Translate ambiguous problems into shipped systems, and teach others to do the same.",
+    tag: "SHIP",
+  },
+];
+
+const stackLayers = [
+  {
+    layer: "01",
+    name: "SILICON",
+    note: "ESP32 · sensors",
+  },
+  {
+    layer: "02",
+    name: "FIRMWARE",
+    note: "Embedded C · PID",
+  },
+  {
+    layer: "03",
+    name: "DATA",
+    note: "RAG · LLMs",
+  },
+  {
+    layer: "04",
+    name: "SCREEN",
+    note: "React · pixels",
+  },
+];
+
+const proofPoints = [
+  {
+    title: "RAG intelligence systems",
+    detail: "Claude 3.5 · GPT-4o — internal secure document analysis",
+  },
+  {
+    title: "40% efficiency gain",
+    detail: "Legacy portal modernization with React & Node",
+  },
+  {
+    title: "Project TITANZ",
+    detail: "From-scratch UAV — 250Hz sensor-fusion + PID loop",
+  },
+  {
+    title: "50+ staff trained",
+    detail: "JavaScript, Python, and embedded C at the Ministry of Defense",
   },
 ];
 
@@ -323,4 +373,12 @@ const projects = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects };
+export {
+  services,
+  stackLayers,
+  proofPoints,
+  technologies,
+  experiences,
+  testimonials,
+  projects,
+};
