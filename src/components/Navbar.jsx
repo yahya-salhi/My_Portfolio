@@ -104,18 +104,16 @@ const Navbar = () => {
     event.preventDefault();
     setActive("");
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+    });
   };
 
   const handleLinkClick = (title) => {
     setActive(title);
     setMenuOpen(false);
   };
-
-  const navLinkClasses = (isActive) =>
-    `relative inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-sm font-medium transition-colors duration-150 ${
-      isActive ? "text-text-primary" : "text-text-secondary hover:text-text-primary"
-    }`;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -125,18 +123,18 @@ const Navbar = () => {
         }`}
         aria-label="Main navigation"
       >
-        <div className="mx-auto flex h-[var(--layout-navbar-height)] max-w-[var(--layout-max-width)] items-center justify-between px-6 md:px-8 lg:px-12">
+        <div className="mx-auto flex h-(--layout-navbar-height) max-w-(--layout-max-width) items-center justify-between px-6 md:px-8 lg:px-12">
           <a
             href="#"
             onClick={handleBrandClick}
-            className="flex items-center gap-3 rounded-sm"
+            className="flex items-center gap-3 rounded-sm transition-opacity hover:opacity-80"
           >
             <img src={logo} alt="" className="h-9 w-9 object-contain" />
             <span className="flex flex-col justify-center">
               <span className="text-lg font-bold leading-none text-text-primary">
                 yahya
               </span>
-              <span className="mt-1 hidden text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.1em] text-text-secondary lg:block">
+              <span className="mt-1 hidden text-[0.6875rem] font-semibold uppercase leading-none tracking-widest text-text-secondary lg:block">
                 AI Engineer · Full-Stack Developer
               </span>
             </span>
@@ -151,13 +149,22 @@ const Navbar = () => {
                     href={`#${link.id}`}
                     onClick={() => handleLinkClick(link.title)}
                     aria-current={isActive ? "page" : undefined}
-                    className={navLinkClasses(isActive)}
+                    className={`relative inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-sm font-medium transition-colors duration-150 ${
+                      isActive
+                        ? "text-text-primary"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
                   >
                     {link.title}
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-accent-primary"
+                        className="absolute inset-x-3 -bottom-0.5 mx-auto h-1 w-1 rounded-full"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary))",
+                          boxShadow: "0 0 6px var(--color-accent-glow-cyan)",
+                        }}
                       />
                     )}
                   </a>
@@ -171,7 +178,9 @@ const Navbar = () => {
               ref={toggleRef}
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
-              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-label={
+                menuOpen ? "Close navigation menu" : "Open navigation menu"
+              }
               aria-expanded={menuOpen}
               aria-controls="mobile-nav-menu"
               className="flex h-11 w-11 items-center justify-center rounded-sm text-text-primary transition-colors duration-150 hover:text-accent-secondary"
@@ -196,17 +205,15 @@ const Navbar = () => {
                           aria-current={isActive ? "page" : undefined}
                           className={`flex min-h-11 items-center rounded-sm px-3 text-sm font-medium transition-colors duration-150 ${
                             isActive
-                              ? "bg-bg-glass text-text-primary"
+                              ? "border-l-2 border-l-accent-secondary bg-bg-glass pl-2.5 text-text-primary"
                               : "text-text-secondary hover:bg-bg-glass-hover hover:text-text-primary"
                           }`}
                         >
                           <span
                             aria-hidden="true"
-                            className={
-                              isActive
-                                ? "mr-2 h-1.5 w-1.5 rounded-full bg-accent-secondary"
-                                : "mr-2 h-1.5 w-1.5 rounded-full bg-transparent"
-                            }
+                            className={`mr-2 h-1.5 w-1.5 rounded-full ${
+                              isActive ? "bg-accent-secondary" : "bg-transparent"
+                            }`}
                           />
                           {link.title}
                         </a>
