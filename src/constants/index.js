@@ -288,6 +288,36 @@ const experiences = [
   },
 ];
 
+const education = [
+  {
+    title: "DUT Industrie Informatique",
+    institution: "Higher Institute of Computer Science and Multimedia of Gabes (ISIMG)",
+    location: "Gabes, Tunisia",
+    type: "Diplôme Universitaire de Technologie",
+    date: "Sep 2005 — Aug 2010",
+    accent: "secondary",
+    points: [
+      "Diplôme Universitaire de Technologie (DUT) in Informatique Industrielle.",
+      "Founded the technical foundation in software engineering, computer science, and industrial/embedded computing during the ISIMG programme.",
+    ],
+  },
+];
+
+const certifications = [
+  "Building AI Applications with Pinecone",
+  "Software Engineering Principles in Python",
+  "LLMOps Concepts",
+  "Working with Hugging Face",
+  "JavaScript Essentials",
+  "Python Essentials",
+  "Developing LLM Applications with LangChain",
+  "Model Context Protocol (MCP)",
+  "Claude Code in Action",
+  "Working with the OpenAI API",
+  "Prompt Engineering with the OpenAI API",
+  "English for IT 2",
+];
+
 const projects = [
   {
     name: "UpKeepPro",
@@ -424,5 +454,7 @@ export {
   skillCategories,
   technologies,
   experiences,
+  education,
+  certifications,
   projects,
 };

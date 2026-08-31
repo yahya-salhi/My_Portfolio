@@ -11,7 +11,6 @@
  *   - src/hoc/SectionWrapper.jsx        (styles.padding)
  *   - src/components/Works.jsx          (sectionSubText / sectionHeadText)
  *   - src/components/GitHubStats.jsx    (sectionSubText / sectionHeadText)
- *   - src/components/Education.jsx      (sectionSubText / sectionHeadText)
  *   - src/components/SectionFallback.jsx (padding)
  *   - src/components/Contact.jsx        (sectionSubText / sectionHeadText)
  */

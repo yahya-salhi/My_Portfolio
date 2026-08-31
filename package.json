@@ -20,7 +20,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
-    "react-vertical-timeline-component": "^3.6.0",
     "three": "^0.160.0"
   },
   "devDependencies": {
