@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { navLinks } from "../constants";
 
@@ -82,6 +83,20 @@ const NavLink = ({ link, activeTitle, onSelect, variant, linkRef }) => {
       </a>
     </li>
   );
+};
+
+NavLink.propTypes = {
+  link: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  }).isRequired,
+  activeTitle: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  variant: PropTypes.oneOf(["desktop", "mobile"]).isRequired,
+  linkRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
 };
 
 /* ==========================================================================
