@@ -12,7 +12,6 @@
  *   - src/components/Works.jsx          (sectionSubText / sectionHeadText)
  *   - src/components/GitHubStats.jsx    (sectionSubText / sectionHeadText)
  *   - src/components/Education.jsx      (sectionSubText / sectionHeadText)
- *   - src/components/Feedbacks.jsx      (padding / paddingX / section*)
  *   - src/components/SectionFallback.jsx (padding)
  *   - src/components/Contact.jsx        (sectionSubText / sectionHeadText)
  */

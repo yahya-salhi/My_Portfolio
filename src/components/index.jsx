@@ -20,7 +20,6 @@ const Experience = lazySection(() => import("./Experience"));
 const Education = lazySection(() => import("./Education"));
 const Works = lazySection(() => import("./Works"));
 const GitHubStats = lazySection(() => import("./GitHubStats"));
-const Feedbacks = lazySection(() => import("./Feedbacks"));
 const Contact = lazySection(() => import("./Contact"));
 
 export {
@@ -32,6 +31,5 @@ export {
   Education,
   Works,
   GitHubStats,
-  Feedbacks,
   Contact,
 };

@@ -288,30 +288,6 @@ const experiences = [
   },
 ];
 
-const testimonials = [
-  {
-    testimonial:
-      "Yahya delivered a polished React application on schedule. Communication was clear and the codebase was easy to hand off.",
-    name: "Client — Web App",
-    designation: "Freelance",
-    company: "Upwork",
-  },
-  {
-    testimonial:
-      "Strong full-stack skills: responsive UI, solid API integration, and attention to detail on edge cases.",
-    name: "Client — MERN Project",
-    designation: "Product",
-    company: "Remote",
-  },
-  {
-    testimonial:
-      "Professional, proactive, and quick to iterate from feedback. I would work with Yahya again.",
-    name: "Client — Portfolio",
-    designation: "Collaboration",
-    company: "Direct",
-  },
-];
-
 const projects = [
   {
     name: "UpKeepPro",
@@ -448,6 +424,5 @@ export {
   skillCategories,
   technologies,
   experiences,
-  testimonials,
   projects,
 };

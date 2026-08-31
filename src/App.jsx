@@ -4,7 +4,6 @@ import {
   Contact,
   Education,
   Experience,
-  Feedbacks,
   GitHubStats,
   Hero,
   Navbar,
@@ -24,7 +23,6 @@ function App() {
       <Education />
       <Works />
       <GitHubStats />
-      <Feedbacks />
       <Contact />
     </main>
   );
