@@ -14,7 +14,6 @@
  *   - src/components/Education.jsx      (sectionSubText / sectionHeadText)
  *   - src/components/Feedbacks.jsx      (padding / paddingX / section*)
  *   - src/components/SectionFallback.jsx (padding)
- *   - src/components/Experience.jsx     (sectionSubText / sectionHeadText)
  *   - src/components/Contact.jsx        (sectionSubText / sectionHeadText)
  */
 const styles = {
