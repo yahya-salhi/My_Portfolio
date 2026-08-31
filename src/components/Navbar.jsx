@@ -34,7 +34,63 @@ const CloseIcon = () => (
   </svg>
 );
 
-const Navbar = () => {
+/* ==========================================================================
+   Internal seam: NavLink
+   The single rendering interface for a navigation link. Both the desktop and
+   the mobile render paths consume this; active semantics and click behavior
+   live here once, not duplicated per view.
+   ========================================================================== */
+const NavLink = ({ link, activeTitle, onSelect, variant, linkRef }) => {
+  const isActive = activeTitle === link.title;
+
+  const desktopClasses = `relative inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-sm font-medium transition-colors duration-150 ${
+    isActive
+      ? "text-text-primary"
+      : "text-text-secondary hover:text-text-primary"
+  }`;
+
+  const mobileClasses = `flex min-h-11 items-center rounded-sm px-3 text-sm font-medium transition-colors duration-150 ${
+    isActive
+      ? "border-l-2 border-l-accent-secondary bg-bg-glass pl-2.5 text-text-primary"
+      : "text-text-secondary hover:bg-bg-glass-hover hover:text-text-primary"
+  }`;
+
+  return (
+    <li>
+      <a
+        ref={linkRef}
+        href={`#${link.id}`}
+        onClick={() => onSelect(link.title)}
+        aria-current={isActive ? "page" : undefined}
+        className={variant === "desktop" ? desktopClasses : mobileClasses}
+      >
+        {variant === "mobile" && (
+          <span
+            aria-hidden="true"
+            className={`mr-2 h-1.5 w-1.5 rounded-full ${
+              isActive ? "bg-accent-secondary" : "bg-transparent"
+            }`}
+          />
+        )}
+        {link.title}
+        {variant === "desktop" && isActive && (
+          <span
+            aria-hidden="true"
+            className="accent-dot absolute inset-x-3 -bottom-0.5 mx-auto h-1 w-1 rounded-full"
+          />
+        )}
+      </a>
+    </li>
+  );
+};
+
+/* ==========================================================================
+   Internal seam: useNavBehavior
+   Owns all navigation behavior (active-section observation, scroll state,
+   drawer semantics, keyboard, focus, outside-click) so it concentrates here
+   and both render paths consume a single source of truth.
+   ========================================================================== */
+const useNavBehavior = () => {
   const [active, setActive] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -43,9 +99,8 @@ const Navbar = () => {
   const firstLinkRef = useRef(null);
 
   useEffect(() => {
-    const sectionIds = navLinks.map((link) => link.id);
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
+    const sections = navLinks
+      .map((link) => document.getElementById(link.id))
       .filter(Boolean);
 
     const observer = new IntersectionObserver(
@@ -109,10 +164,38 @@ const Navbar = () => {
     });
   };
 
-  const handleLinkClick = (title) => {
+  const handleNavSelect = (title) => {
     setActive(title);
     setMenuOpen(false);
   };
+
+  return {
+    navLinks,
+    active,
+    scrolled,
+    menuOpen,
+    setMenuOpen,
+    menuRef,
+    toggleRef,
+    handleBrandClick,
+    handleNavSelect,
+    firstLinkRef,
+  };
+};
+
+const Navbar = () => {
+  const {
+    navLinks,
+    active,
+    scrolled,
+    menuOpen,
+    setMenuOpen,
+    menuRef,
+    toggleRef,
+    handleBrandClick,
+    handleNavSelect,
+    firstLinkRef,
+  } = useNavBehavior();
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -132,31 +215,15 @@ const Navbar = () => {
           </a>
 
           <ul className="hidden items-center gap-3 md:flex">
-            {navLinks.map((link) => {
-              const isActive = active === link.title;
-              return (
-                <li key={link.id}>
-                  <a
-                    href={`#${link.id}`}
-                    onClick={() => handleLinkClick(link.title)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={`relative inline-flex min-h-11 items-center rounded-sm px-3 py-2 text-sm font-medium transition-colors duration-150 ${
-                      isActive
-                        ? "text-text-primary"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
-                  >
-                    {link.title}
-                    {isActive && (
-                      <span
-                        aria-hidden="true"
-                        className="accent-dot absolute inset-x-3 -bottom-0.5 mx-auto h-1 w-1 rounded-full"
-                      />
-                    )}
-                  </a>
-                </li>
-              );
-            })}
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.id}
+                link={link}
+                activeTitle={active}
+                onSelect={handleNavSelect}
+                variant="desktop"
+              />
+            ))}
           </ul>
 
           <div ref={menuRef} className="relative md:hidden">
@@ -177,35 +244,19 @@ const Navbar = () => {
             {menuOpen && (
               <div
                 id="mobile-nav-menu"
-                className="glass absolute right-0 top-[calc(100%+0.75rem)] w-[min(17rem,calc(100vw-3rem))] rounded-lg p-2"
+                className="absolute right-0 top-[calc(100%+0.75rem)] w-[min(17rem,calc(100vw-3rem))] rounded-lg border border-border-light bg-bg-secondary p-2 shadow-xl"
               >
                 <ul className="flex flex-col">
-                  {navLinks.map((link, index) => {
-                    const isActive = active === link.title;
-                    return (
-                      <li key={link.id}>
-                        <a
-                          ref={index === 0 ? firstLinkRef : undefined}
-                          href={`#${link.id}`}
-                          onClick={() => handleLinkClick(link.title)}
-                          aria-current={isActive ? "page" : undefined}
-                          className={`flex min-h-11 items-center rounded-sm px-3 text-sm font-medium transition-colors duration-150 ${
-                            isActive
-                              ? "border-l-2 border-l-accent-secondary bg-bg-glass pl-2.5 text-text-primary"
-                              : "text-text-secondary hover:bg-bg-glass-hover hover:text-text-primary"
-                          }`}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={`mr-2 h-1.5 w-1.5 rounded-full ${
-                              isActive ? "bg-accent-secondary" : "bg-transparent"
-                            }`}
-                          />
-                          {link.title}
-                        </a>
-                      </li>
-                    );
-                  })}
+                  {navLinks.map((link, index) => (
+                    <NavLink
+                      key={link.id}
+                      link={link}
+                      activeTitle={active}
+                      onSelect={handleNavSelect}
+                      variant="mobile"
+                      linkRef={index === 0 ? firstLinkRef : undefined}
+                    />
+                  ))}
                 </ul>
               </div>
             )}
