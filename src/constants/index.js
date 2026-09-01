@@ -318,6 +318,37 @@ const certifications = [
   "English for IT 2",
 ];
 
+const contactInfo = {
+  email: "pcclub10@gmail.com",
+  phone: "+216 20 089 732",
+  location: "Tunisia",
+};
+
+const socialLinks = [
+  {
+    name: "GitHub",
+    url: "https://github.com/yahya-salhi",
+    icon: "github",
+  },
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/yahya-salhi-ai-engineer/",
+    icon: "linkedin",
+  },
+  {
+    name: "Upwork",
+    url: "https://www.upwork.com/freelancers/~01fde061103dd6cd24",
+    icon: "upwork",
+  },
+];
+
+const availability = {
+  enabled: true,
+  label: "Available for Work",
+  description:
+    "I'm currently available for freelance projects and full-time opportunities. Let's discuss how I can help bring your ideas to life!",
+};
+
 const projects = [
   {
     name: "UpKeepPro",
@@ -456,5 +487,8 @@ export {
   experiences,
   education,
   certifications,
+  contactInfo,
+  socialLinks,
+  availability,
   projects,
 };

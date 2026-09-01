@@ -12,7 +12,6 @@
  *   - src/components/Works.jsx          (sectionSubText / sectionHeadText)
  *   - src/components/GitHubStats.jsx    (sectionSubText / sectionHeadText)
  *   - src/components/SectionFallback.jsx (padding)
- *   - src/components/Contact.jsx        (sectionSubText / sectionHeadText)
  */
 const styles = {
   paddingX: "sm:px-16 px-4",
