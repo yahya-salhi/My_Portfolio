@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "optimize-images": "node scripts/optimize-images.mjs",
+    "update:github-stats": "node scripts/fetch-github-stats.mjs",
     "prebuild": "node scripts/optimize-images.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
