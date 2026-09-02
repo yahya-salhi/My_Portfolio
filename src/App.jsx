@@ -10,6 +10,7 @@ import {
   Skills,
   Works,
 } from "./components";
+import ChatbotWidget from "./components/chatbot/ChatbotWidget";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Works />
       <GitHubStats />
       <Contact />
+      <ChatbotWidget />
     </main>
   );
 }

@@ -422,7 +422,7 @@ const projects = [
     imageAlt: "WorldWise travel tracking interactive map",
     year: null,
     liveUrl: null,
-    repoUrl: "https://github.com/yahya-salhi/worldwise",
+    repoUrl: null,
     featured: false,
     // TODO: Owner input needed — confirm WorldWise year + live demo URL (repo is verified)
   },

@@ -9,6 +9,7 @@
     "build": "vite build",
     "optimize-images": "node scripts/optimize-images.mjs",
     "update:github-stats": "node scripts/fetch-github-stats.mjs",
+    "build:rag": "node scripts/build-rag-index.mjs",
     "prebuild": "node scripts/optimize-images.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

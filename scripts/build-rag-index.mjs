@@ -1,0 +1,124 @@
+/**
+ * Build a static RAG index from the corpus markdown files.
+ * Run: node scripts/build-rag-index.mjs  (or npm run build:rag)
+ *
+ * Reads api/rag/corpus/*.md, chunks each file, embeds each chunk via OpenRouter,
+ * and writes api/rag/index.json (chunks + vectors). This is a build-time script —
+ * the Edge Function loads the committed index at runtime, so no external DB or
+ * runtime embedding of the corpus is needed.
+ *
+ * Requires: OPENROUTER_API_KEY in the environment.
+ */
+import { readdir, readFile, writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.join(__dirname, "..");
+const corpusDir = path.join(root, "api", "rag", "corpus");
+const outFile = path.join(root, "api", "rag", "index.json");
+
+const EMBEDDING_MODEL = process.env.RAG_EMBEDDING_MODEL || "text-embedding-3-small";
+const EMBEDDING_URL = "https://openrouter.ai/api/v1/embeddings";
+const CHUNK_SIZE = 700; // approx chars per chunk
+const CHUNK_OVERLAP = 100;
+
+function chunkMarkdown(text, source) {
+  if (!text) return [];
+  const chunks = [];
+  let buffer = "";
+  let index = 0;
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (buffer.length + line.length + 1 <= CHUNK_SIZE) {
+      buffer += line + "\n";
+    } else {
+      chunks.push({ id: `${source}:${index}`, source, content: buffer.trim() });
+      index += 1;
+      // keep a small overlap for continuity across chunk boundaries
+      const overlap = buffer.slice(-CHUNK_OVERLAP);
+      buffer = overlap + "\n" + line + "\n";
+    }
+  }
+  if (buffer.trim()) {
+    chunks.push({ id: `${source}:${index}`, source, content: buffer.trim() });
+  }
+  return chunks;
+}
+
+async function embed(input, apiKey) {
+  const response = await fetch(EMBEDDING_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ model: EMBEDDING_MODEL, input }),
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`Embedding error ${response.status}: ${text.slice(0, 300)}`);
+  }
+  const data = await response.json();
+  return data.data.map((d) => d.embedding);
+}
+
+async function main() {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    console.error("OPENROUTER_API_KEY is required to build the RAG index.");
+    process.exit(1);
+  }
+
+  const files = (await readdir(corpusDir))
+    .filter((f) => f.endsWith(".md"))
+    .sort();
+
+  const chunks = [];
+  for (const file of files) {
+    const text = await readFile(path.join(corpusDir, file), "utf8");
+    const source = file.replace(/\.md$/, "");
+    chunks.push(...chunkMarkdown(text, source));
+  }
+
+  console.log(`Found ${chunks.length} chunks across ${files.length} files — embedding...`);
+
+  // Embed in batches of 20 to respect request limits while staying fast.
+  const BATCH = 20;
+  const vectors = [];
+  for (let i = 0; i < chunks.length; i += BATCH) {
+    const batch = chunks.slice(i, i + BATCH);
+    const batchVectors = await embed(
+      batch.map((c) => c.content),
+      apiKey
+    );
+    batchVectors.forEach((v, j) => {
+      vectors.push(v);
+      console.log(
+        `  [${i + j + 1}/${chunks.length}] ${batch[j].source}:${batch[j].id}`
+      );
+    });
+  }
+
+  const index = {
+    model: EMBEDDING_MODEL,
+    chunkSize: CHUNK_SIZE,
+    chunkOverlap: CHUNK_OVERLAP,
+    builtAt: new Date().toISOString(),
+    chunks: chunks.map((c, idx) => ({
+      id: c.id,
+      source: c.source,
+      content: c.content,
+      vector: vectors[idx],
+    })),
+  };
+
+  await mkdir(path.dirname(outFile), { recursive: true });
+  await writeFile(outFile, `${JSON.stringify(index)}\n`, "utf8");
+  console.log(`Wrote ${outFile} (${chunks.length} chunks, model ${EMBEDDING_MODEL})`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
