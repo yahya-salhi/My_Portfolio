@@ -13,9 +13,11 @@ import { retrieveContext } from "./rag.js";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-// Env-configurable, with safe defaults.
-const MODEL = process.env.CHAT_MODEL || "openai/gpt-4o";
-const API_KEY = process.env.OPENROUTER_API_KEY || "";
+// Env-configurable, with safe defaults. `process` may be absent on an Edge
+// runtime, so read defensively from globalThis.
+const env = globalThis.process?.env || {};
+const MODEL = env.CHAT_MODEL || "openai/gpt-4o";
+const API_KEY = env.OPENROUTER_API_KEY || "";
 
 // Limits (per project rules: validate + bound every request).
 const MAX_MESSAGES = 20;
@@ -63,7 +65,12 @@ async function readBody(req) {
   }
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
-  const raw = Buffer.concat(chunks).toString("utf8");
+  // Avoid Node-only Buffer; TextDecoder is available on both runtimes.
+  const decoder = new TextDecoder();
+  const raw = chunks
+    .map((c) => (typeof c === "string" ? c : decoder.decode(c, { stream: true })))
+    .join("");
+  decoder.decode(); // flush
   return raw ? JSON.parse(raw) : {};
 }
 
@@ -107,9 +114,14 @@ function isRateLimited(ip) {
   return entry.count > RATE_LIMIT.max;
 }
 
-async function callOpenRouter(messages, context) {
+async function callOpenRouter(messages, context, externalSignal) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const onExternalAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", onExternalAbort);
+  }
   try {
     const response = await fetch(OPENROUTER_URL, {
       method: "POST",
@@ -144,6 +156,7 @@ async function callOpenRouter(messages, context) {
     return content;
   } finally {
     clearTimeout(timeout);
+    if (externalSignal) externalSignal.removeEventListener("abort", onExternalAbort);
   }
 }
 
@@ -155,10 +168,30 @@ export default async function handler(req) {
   if (req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405);
   }
-  if (!API_KEY) {
-    return json({ error: "server_misconfigured" }, 500);
-  }
 
+  try {
+    requireKey();
+    return await run(req);
+  } catch (err) {
+    const message = err?.message;
+    console.error("[chat] uncaught:", message);
+    if (message === "rate_limited") return json({ error: "rate_limited" }, 429);
+    if (message === "unauthorized") return json({ error: "chat_unavailable" }, 500);
+    if (message === "AbortError" || message === "empty_response" || message === "upstream_error") {
+      return json({ error: "chat_unavailable" }, 502);
+    }
+    return json({ error: "chat_unavailable" }, 500);
+  }
+}
+
+function requireKey() {
+  if (!API_KEY) {
+    console.error("[chat] missing OPENROUTER_API_KEY");
+    throw new Error("chat_unavailable");
+  }
+}
+
+async function run(req) {
   const ip =
     headerValue(req, "x-forwarded-for")?.split(",")[0]?.trim() ||
     headerValue(req, "cf-connecting-ip") ||
@@ -167,32 +200,33 @@ export default async function handler(req) {
     return json({ error: "rate_limited" }, 429);
   }
 
+  let body;
+  try {
+    body = await readBody(req);
+  } catch (err) {
+    return json({ error: "invalid_request" }, 400);
+  }
+
   let messages;
   try {
-    const body = await readBody(req);
     messages = sanitizeMessages(body?.messages);
   } catch (err) {
-    if (err?.message === "missing_messages") {
-      return json({ error: "invalid_request" }, 400);
-    }
     return json({ error: "invalid_request" }, 400);
   }
 
   const query = messages[messages.length - 1].content;
-  const context = await retrieveContext(query, API_KEY);
 
+  // Overall hard timeout so the invocation can never hang past its budget.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS + 5000);
   try {
-    const content = await callOpenRouter(messages, context);
+    console.error("[chat] retrieving context…");
+    const context = await retrieveContext(query, API_KEY);
+    console.error("[chat] context retrieved len=" + String(context).length + "; calling OpenRouter…");
+    const content = await callOpenRouter(messages, context, controller.signal);
+    console.error("[chat] openrouter ok");
     return json({ content });
-  } catch (err) {
-    const message = err?.message;
-    if (message === "rate_limited") return json({ error: "rate_limited" }, 429);
-    if (message === "unauthorized") {
-      return json({ error: "chat_unavailable" }, 500);
-    }
-    if (message === "AbortError" || message === "empty_response" || message === "upstream_error") {
-      return json({ error: "chat_unavailable" }, 502);
-    }
-    return json({ error: "chat_unavailable" }, 500);
+  } finally {
+    clearTimeout(timer);
   }
 }
