@@ -1,19 +1,3 @@
-import {
-  javascript,
-  typescript,
-  html,
-  css,
-  reactjs,
-  redux,
-  tailwind,
-  nodejs,
-  mongodb,
-  git,
-  figma,
-  docker,
-  threejs,
-} from "../assets";
-
 export const navLinks = [
   {
     id: "about",
@@ -195,61 +179,6 @@ const skillCategories = [
   },
 ];
 
-const technologies = [
-  {
-    name: "HTML 5",
-    icon: html,
-  },
-  {
-    name: "CSS 3",
-    icon: css,
-  },
-  {
-    name: "JavaScript",
-    icon: javascript,
-  },
-  {
-    name: "TypeScript",
-    icon: typescript,
-  },
-  {
-    name: "React JS",
-    icon: reactjs,
-  },
-  {
-    name: "Redux Toolkit",
-    icon: redux,
-  },
-  {
-    name: "Tailwind CSS",
-    icon: tailwind,
-  },
-  {
-    name: "Node JS",
-    icon: nodejs,
-  },
-  {
-    name: "MongoDB",
-    icon: mongodb,
-  },
-  {
-    name: "Three JS",
-    icon: threejs,
-  },
-  {
-    name: "git",
-    icon: git,
-  },
-  {
-    name: "figma",
-    icon: figma,
-  },
-  {
-    name: "docker",
-    icon: docker,
-  },
-];
-
 const experiences = [
   {
     title: "Senior Full-Stack Developer & AI Engineer",
@@ -366,7 +295,7 @@ const projects = [
       "Builds live company dossiers (culture, tech stack, interview prep) via autonomous browser agents.",
     ],
     tags: ["next.js", "typescript", "tailwind", "gpt-4o", "postgresql", "posthog"],
-    image: "/projects/jop.png",
+    image: "/projects/jop.webp",
     imageAlt: "JobPilot job match scoring dashboard",
     year: 2026,
     liveUrl: null,
@@ -392,7 +321,7 @@ const projects = [
       "Ground-up ownership of the flight-control stack — no proprietary black boxes.",
     ],
     tags: ["c", "embedded", "pwm", "pid", "imu", "sensor-fusion"],
-    image: "/projects/drone.png",
+    image: "/projects/drone.webp",
     imageAlt: "Custom-built quadcopter drone with flight controller",
     year: null,
     liveUrl: null,
@@ -418,7 +347,7 @@ const projects = [
       "Clean, responsive UI for planning and reviewing trips.",
     ],
     tags: ["react", "typescript", "maps", "css"],
-    image: "/projects/world.png",
+    image: "/projects/world.webp",
     imageAlt: "WorldWise travel tracking interactive map",
     year: null,
     liveUrl: null,
@@ -445,7 +374,7 @@ const projects = [
       "100% on-device storage (SQLite) — no sign-up, backup/export to a local file, CSV export free + PDF doctor report with YeZZi Plus.",
     ],
     tags: ["react-native", "expo", "expo-sqlite", "typescript", "gpt-4o", "revenuecat"],
-    image: "/projects/yezzi.png",
+    image: "/projects/yezzi.webp",
     imageAlt: "YeZZ diabetes management app screens",
     year: 2026,
     liveUrl: null,
@@ -460,7 +389,6 @@ export {
   stackLayers,
   proofPoints,
   skillCategories,
-  technologies,
   experiences,
   education,
   certifications,
