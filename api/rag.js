@@ -1,35 +1,37 @@
 /**
- * Runtime RAG helpers for the Edge Function.
- * Loads the committed index (api/rag/index.json), embeds the user's query
- * via OpenRouter, and returns the top-k most similar chunks as formatted context.
+ * Runtime RAG helpers for the /api/chat function.
+ * Loads the committed, precomputed index (api/rag/index.js), embeds the user's
+ * query via OpenRouter, and returns the top-k most similar chunks as context.
  * Retrieval failures degrade gracefully to an empty context — they never break chat.
  */
-import { createRequire } from "node:module";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
-const index = require(path.join(__dirname, "rag", "index.json"));
+import index from "./rag/index.js";
 
 const EMBEDDING_MODEL = "text-embedding-3-small";
 const EMBEDDING_URL = "https://openrouter.ai/api/v1/embeddings";
+const EMBED_TIMEOUT_MS = 8000;
 const TOP_K = 5;
 
 async function embedQuery(text, apiKey) {
-  const response = await fetch(EMBEDDING_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
-  });
-  if (!response.ok) {
-    throw new Error("embedding_failed");
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), EMBED_TIMEOUT_MS);
+  try {
+    const response = await fetch(EMBEDDING_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error("embedding_failed");
+    }
+    const data = await response.json();
+    return data.data[0]?.embedding || null;
+  } finally {
+    clearTimeout(timeout);
   }
-  const data = await response.json();
-  return data.data[0]?.embedding || null;
 }
 
 function cosineSimilarity(a, b) {
