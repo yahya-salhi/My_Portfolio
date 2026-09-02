@@ -29,7 +29,8 @@ const RATE_LIMIT = { windowMs: 60000, max: 30 };
 const ipHits = new Map();
 
 function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
+  const jsonBody = JSON.stringify(data);
+  return new Response(jsonBody, {
     status,
     headers: {
       "Content-Type": "application/json",
@@ -39,6 +40,31 @@ function json(data, status = 200) {
       "Cache-Control": "no-store",
     },
   });
+}
+
+// Vercel may call this as a Node serverless function (IncomingMessage) or an
+// Edge function (Web Request). Normalize both so the request never depends on
+// runtime-specific methods.
+function headerValue(req, name) {
+  const key = name.toLowerCase();
+  const headers = req.headers;
+  if (!headers) return null;
+  if (typeof headers.get === "function") return headers.get(name);
+  const value = headers[key];
+  return typeof value === "string" ? value : null;
+}
+
+async function readBody(req) {
+  if (typeof req.json === "function") return req.json();
+  // Some frameworks pre-parse the body.
+  if (req.body !== undefined && req.body !== null) {
+    if (typeof req.body === "string") return req.body ? JSON.parse(req.body) : {};
+    return req.body;
+  }
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const raw = Buffer.concat(chunks).toString("utf8");
+  return raw ? JSON.parse(raw) : {};
 }
 
 function sanitizeMessages(messages) {
@@ -134,8 +160,8 @@ export default async function handler(req) {
   }
 
   const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("cf-connecting-ip") ||
+    headerValue(req, "x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerValue(req, "cf-connecting-ip") ||
     "unknown";
   if (isRateLimited(ip)) {
     return json({ error: "rate_limited" }, 429);
@@ -143,7 +169,7 @@ export default async function handler(req) {
 
   let messages;
   try {
-    const body = await req.json();
+    const body = await readBody(req);
     messages = sanitizeMessages(body?.messages);
   } catch (err) {
     if (err?.message === "missing_messages") {
