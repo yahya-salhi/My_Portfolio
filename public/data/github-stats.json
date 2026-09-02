@@ -1,0 +1,35 @@
+{
+  "username": "yahya-salhi",
+  "profile": {
+    "public_repos": 36,
+    "followers": 4,
+    "html_url": "https://github.com/yahya-salhi"
+  },
+  "totals": {
+    "stars": 1,
+    "forks": 0
+  },
+  "languages": [
+    {
+      "name": "JavaScript",
+      "bytes": 1844846
+    },
+    {
+      "name": "TypeScript",
+      "bytes": 1668674
+    },
+    {
+      "name": "CSS",
+      "bytes": 410589
+    },
+    {
+      "name": "SCSS",
+      "bytes": 268940
+    },
+    {
+      "name": "Less",
+      "bytes": 233502
+    }
+  ],
+  "fetchedAt": "2026-09-01T10:18:03.563Z"
+}

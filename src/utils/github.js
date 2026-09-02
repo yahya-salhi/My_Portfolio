@@ -1,228 +1,228 @@
-// GitHub API utilities for fetching repository data
-
-const GITHUB_USERNAME = "yahya-salhi";
-const GITHUB_API_BASE = "https://api.github.com";
-
 /**
- * Fetch user's GitHub repositories
- * @param {number} limit - Number of repositories to fetch
- * @returns {Promise<Array>} Array of repository objects
+ * GitHub stats data layer (F-18).
+ *
+ * Hybrid-lite sourcing:
+ *   - live:    2 unauthenticated API calls (/users/:user, /users/:user/repos)
+ *              only when the localStorage cache is stale.
+ *   - cache:   localStorage copy with a 12h TTL.
+ *   - static:  committed public/data/github-stats.json snapshot (real data
+ *              regenerated via `npm run update:github-stats`).
+ *
+ * Rate-limit handling: HTTP 403 or X-RateLimit-Remaining: 0 fails the live
+ * path fast and the caller falls back to cache → snapshot, with a notice.
+ * No invented data is ever rendered.
  */
-export const fetchGitHubRepos = async (limit = 10) => {
-  try {
-    const response = await fetch(
-      `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`,
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-        },
+
+export const GITHUB_USERNAME = "yahya-salhi";
+export const GITHUB_PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`;
+
+const GITHUB_API_BASE = "https://api.github.com";
+const CACHE_KEY = "gh-stats-cache:v1";
+const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 8000;
+
+const fetchWithTimeout = (url, timeoutMs = FETCH_TIMEOUT_MS) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, {
+    headers: { Accept: "application/vnd.github.v3+json" },
+    signal: controller.signal,
+  })
+    .catch((error) => {
+      if (error.name === "AbortError") {
+        throw new Error("GitHub request timed out");
       }
+      throw error;
+    })
+    .finally(() => clearTimeout(timer));
+};
+
+const isRateLimited = (response) => {
+  const remaining = response.headers.get("x-ratelimit-remaining");
+  return (
+    response.status === 403 ||
+    (remaining !== null && Number(remaining) === 0)
+  );
+};
+
+const toCanonical = ({ profile, totals, languages, updatedAt }) => ({
+  publicRepos: profile.public_repos,
+  followers: profile.followers,
+  stars: totals.stars,
+  forks: totals.forks,
+  languages: languages || [],
+  updatedAt,
+  profileUrl: profile.html_url || GITHUB_PROFILE_URL,
+});
+
+export const fetchLiveGitHubStats = async () => {
+  const [profileRes, reposRes] = await Promise.all([
+    fetchWithTimeout(`${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`),
+    fetchWithTimeout(
+      `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`
+    ),
+  ]);
+
+  if (isRateLimited(profileRes) || isRateLimited(reposRes)) {
+    const error = new Error("GitHub API rate limit exceeded");
+    error.rateLimited = true;
+    throw error;
+  }
+
+  if (!profileRes.ok || !reposRes.ok) {
+    throw new Error(
+      `GitHub API error: ${profileRes.status} / ${reposRes.status}`
     );
+  }
 
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error("GitHub API rate limit exceeded");
-      }
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
+  const [profile, repos] = await Promise.all([
+    profileRes.json(),
+    reposRes.json(),
+  ]);
 
-    const repos = await response.json();
+  const ownedRepos = repos.filter((repo) => !repo.fork);
+  const totals = ownedRepos.reduce(
+    (acc, repo) => ({
+      stars: acc.stars + repo.stargazers_count,
+      forks: acc.forks + repo.forks_count,
+    }),
+    { stars: 0, forks: 0 }
+  );
 
-    // Filter and format the repositories
-    return repos
-      .filter((repo) => !repo.fork) // Exclude forked repositories
-      .map((repo) => ({
-        id: repo.id,
-        name: repo.name,
-        description: repo.description || "No description available",
-        html_url: repo.html_url,
-        homepage: repo.homepage,
-        language: repo.language,
-        languages_url: repo.languages_url,
-        stargazers_count: repo.stargazers_count,
-        forks_count: repo.forks_count,
-        created_at: repo.created_at,
-        updated_at: repo.updated_at,
-        topics: repo.topics || [],
-        size: repo.size,
-        default_branch: repo.default_branch,
-      }));
-  } catch (error) {
-    console.error("Error fetching GitHub repositories:", error);
+  return toCanonical({
+    profile: {
+      public_repos: profile.public_repos,
+      followers: profile.followers,
+      html_url: profile.html_url,
+    },
+    totals,
+    languages: [],
+    updatedAt: new Date().toISOString(),
+  });
+};
+
+export const loadSnapshot = async () => {
+  const response = await fetchWithTimeout(
+    `${import.meta.env.BASE_URL}data/github-stats.json`
+  );
+  if (!response.ok) {
+    throw new Error(`GitHub stats snapshot error: ${response.status}`);
+  }
+  const snapshot = await response.json();
+  return toCanonical({
+    profile: snapshot.profile,
+    totals: snapshot.totals,
+    languages: snapshot.languages,
+    updatedAt: snapshot.fetchedAt,
+  });
+};
+
+const readCache = () => {
+  try {
+    const raw = window.localStorage.getItem(CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeCache = (payload) => {
+  try {
+    window.localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // localStorage unavailable (private mode) — cache is best-effort
+  }
+};
+
+const readSnapshotSafe = async () => {
+  try {
+    return await loadSnapshot();
+  } catch {
+    return null;
+  }
+};
+
+const readSnapshotLanguages = async () => {
+  try {
+    const snapshot = await loadSnapshot();
+    return snapshot.languages || [];
+  } catch {
     return [];
   }
 };
 
 /**
- * Fetch languages used in a specific repository
- * @param {string} repoName - Repository name
- * @returns {Promise<Object>} Object with language statistics
+ * Resolve GitHub stats: fresh cache → live API → stale cache → snapshot → null.
+ * @returns {Promise<{ stats: object|null, source: string|null, notice: string|null }>}
+ *   source is one of "cache" | "live" | "snapshot" | null.
  */
-export const fetchRepoLanguages = async (repoName) => {
-  try {
-    const response = await fetch(
-      `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${repoName}/languages`
-    );
+export const loadGitHubStats = async () => {
+  const cached = readCache();
 
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Error fetching languages for ${repoName}:`, error);
-    return {};
+  if (cached && Date.now() - new Date(cached.savedAt).getTime() < CACHE_TTL_MS) {
+    return { stats: cached.stats, source: "cache", notice: null };
   }
-};
 
-/**
- * Fetch user's GitHub profile information
- * @returns {Promise<Object>} User profile object
- */
-export const fetchGitHubProfile = async () => {
   try {
-    const response = await fetch(
-      `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`,
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error("GitHub API rate limit exceeded");
-      }
-      throw new Error(`GitHub API error: ${response.status}`);
+    const stats = await fetchLiveGitHubStats();
+    const languages = await readSnapshotLanguages();
+    if (languages.length > 0) {
+      stats.languages = languages;
     }
-
-    const profile = await response.json();
-
+    writeCache({ savedAt: new Date().toISOString(), stats });
+    return { stats, source: "live", notice: null };
+  } catch (liveError) {
+    const fallbackStats = cached ? cached.stats : await readSnapshotSafe();
+    if (!fallbackStats) {
+      return { stats: null, source: null, notice: null };
+    }
     return {
-      login: profile.login,
-      name: profile.name,
-      bio: profile.bio,
-      avatar_url: profile.avatar_url,
-      html_url: profile.html_url,
-      public_repos: profile.public_repos,
-      followers: profile.followers,
-      following: profile.following,
-      created_at: profile.created_at,
-      updated_at: profile.updated_at,
-      location: profile.location,
-      blog: profile.blog,
-      company: profile.company,
-    };
-  } catch (error) {
-    console.error("Error fetching GitHub profile:", error);
-    return null;
-  }
-};
-
-/**
- * Fetch user's GitHub contribution statistics
- * @returns {Promise<Object>} Contribution statistics
- */
-export const fetchGitHubStats = async () => {
-  try {
-    // Note: GitHub doesn't provide a direct API for contribution graphs
-    // This is a simplified version that fetches recent activity
-    const response = await fetch(
-      `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events/public?per_page=100`
-    );
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const events = await response.json();
-
-    // Process events to get basic statistics
-    const stats = {
-      totalEvents: events.length,
-      pushEvents: events.filter((event) => event.type === "PushEvent").length,
-      createEvents: events.filter((event) => event.type === "CreateEvent")
-        .length,
-      issueEvents: events.filter((event) => event.type === "IssuesEvent")
-        .length,
-      pullRequestEvents: events.filter(
-        (event) => event.type === "PullRequestEvent"
-      ).length,
-    };
-
-    return stats;
-  } catch (error) {
-    console.error("Error fetching GitHub stats:", error);
-    return {
-      totalEvents: 0,
-      pushEvents: 0,
-      createEvents: 0,
-      issueEvents: 0,
-      pullRequestEvents: 0,
+      stats: fallbackStats,
+      source: cached ? "cache" : "snapshot",
+      notice: liveError.rateLimited
+        ? "GitHub API rate limit reached — showing the latest saved stats."
+        : null,
     };
   }
 };
 
 /**
- * Get the most used programming languages across all repositories
- * @param {Array} repos - Array of repository objects
- * @returns {Promise<Object>} Object with aggregated language statistics
+ * Human-readable freshness label for the stats chip.
+ * @param {string} isoDate - ISO timestamp the stats were produced at.
+ * @param {boolean} synced - true renders "Synced <date>" (snapshot source).
  */
-export const getTopLanguages = async (repos) => {
-  try {
-    const languagePromises = repos.map((repo) => fetchRepoLanguages(repo.name));
-    const languageResults = await Promise.all(languagePromises);
+export const formatFreshness = (isoDate, synced = false) => {
+  if (!isoDate) return "";
+  const then = new Date(isoDate);
+  if (Number.isNaN(then.getTime())) return "";
 
-    // Aggregate language statistics
-    const aggregatedLanguages = {};
-
-    languageResults.forEach((languages) => {
-      Object.entries(languages).forEach(([language, bytes]) => {
-        aggregatedLanguages[language] =
-          (aggregatedLanguages[language] || 0) + bytes;
-      });
-    });
-
-    // Sort by usage (bytes)
-    const sortedLanguages = Object.entries(aggregatedLanguages)
-      .sort(([, a], [, b]) => b - a)
-      .reduce((obj, [language, bytes]) => {
-        obj[language] = bytes;
-        return obj;
-      }, {});
-
-    return sortedLanguages;
-  } catch (error) {
-    console.error("Error aggregating languages:", error);
-    return {};
+  const minutesAgo = Math.floor((Date.now() - then.getTime()) / 60000);
+  if (minutesAgo < 1) return "Updated just now";
+  if (minutesAgo < 60) {
+    return minutesAgo === 1 ? "Updated 1 minute ago" : `Updated ${minutesAgo} minutes ago`;
   }
-};
 
-/**
- * Format repository data for portfolio display
- * @param {Array} repos - Array of repository objects
- * @returns {Array} Formatted repository data for portfolio
- */
-export const formatReposForPortfolio = (repos) => {
-  return repos.map((repo) => ({
-    name: repo.name,
-    description: repo.description,
-    tags: [
-      {
-        name: repo.language?.toLowerCase() || "javascript",
-        color: "blue-text-gradient",
-      },
-      ...repo.topics.slice(0, 2).map((topic) => ({
-        name: topic,
-        color: "green-text-gradient",
-      })),
-    ],
-    image: null, // Will use placeholder images
-    source_code_link: repo.html_url,
-    live_demo_link: repo.homepage,
-    stars: repo.stargazers_count,
-    forks: repo.forks_count,
-    updated_at: repo.updated_at,
-  }));
+  const hoursAgo = Math.floor(minutesAgo / 60);
+  if (hoursAgo < 24) {
+    return hoursAgo === 1 ? "Updated 1 hour ago" : `Updated ${hoursAgo} hours ago`;
+  }
+
+  if (synced) {
+    return `Synced ${then.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })}`;
+  }
+
+  const daysAgo = Math.floor(hoursAgo / 24);
+  if (daysAgo < 7) {
+    return daysAgo === 1 ? "Updated 1 day ago" : `Updated ${daysAgo} days ago`;
+  }
+
+  return `Synced ${then.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })}`;
 };

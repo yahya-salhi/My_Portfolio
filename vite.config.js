@@ -28,9 +28,6 @@ export default defineConfig({
           if (id.includes("framer-motion")) {
             return "motion";
           }
-          if (id.includes("react-vertical-timeline-component")) {
-            return "timeline";
-          }
           if (id.includes("@emailjs")) {
             return "emailjs";
           }

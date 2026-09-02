@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ministry of National Defense">
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e0e7ff"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 6 L52 13 V30 C52 43 44 51 32 57 C20 51 12 43 12 30 V13 Z"
+        fill="url(#shield)" stroke="#7c3aed" stroke-opacity="0.4" stroke-width="2"/>
+  <path d="M32 12 L47 17.5 V30 C47 40 41 46.5 32 51.5 C23 46.5 17 40 17 30 V17.5 Z"
+        fill="#0a0a0f" opacity="0.35"/>
+  <path d="M32 21 L34.6 28.2 L42 28.7 L36.2 33.6 L38.1 40.9 L32 36.6 L25.9 40.9 L27.8 33.6 L22 28.7 L29.4 28.2 Z"
+        fill="url(#star)" stroke="#06b6d4" stroke-width="1.2"/>
+</svg>

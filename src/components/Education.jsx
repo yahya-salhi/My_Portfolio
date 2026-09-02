@@ -1,114 +1,166 @@
-import React from "react";
-import {
-  VerticalTimeline,
-  VerticalTimelineElement,
-} from "react-vertical-timeline-component";
 import { motion } from "framer-motion";
-import "react-vertical-timeline-component/style.min.css";
+import PropTypes from "prop-types";
 
-import { styles } from "../styles";
+import { education, certifications } from "../constants";
 import { SectionWrapper } from "../hoc";
-import { textVariant } from "../utils/motion";
+import { fadeIn, textVariant, staggerContainer } from "../utils/motion";
 
-const educationData = [
-  {
-    title: "Self-Taught Full Stack Developer",
-    institution: "Online Learning Platforms",
-    icon: "🎓", // Using emoji as placeholder
-    iconBg: "#383E56",
-    date: "2020 - Present",
-    points: [
-      "Completed comprehensive courses in React.js, Node.js, and modern web development.",
-      "Mastered TypeScript, MongoDB, Express.js, and various frontend frameworks.",
-      "Built numerous projects to practice and demonstrate skills in real-world scenarios.",
-      "Continuously learning new technologies and staying updated with industry trends.",
-      "Participated in coding challenges and open-source contributions.",
-    ],
-  },
-  {
-    title: "Web Development Fundamentals",
-    institution: "Various Online Courses",
-    icon: "💻",
-    iconBg: "#E6DEDD",
-    date: "2020 - 2021",
-    points: [
-      "Learned HTML5, CSS3, and JavaScript fundamentals through structured courses.",
-      "Studied responsive design principles and modern CSS frameworks.",
-      "Practiced version control with Git and collaborative development workflows.",
-      "Built multiple static websites and landing pages to apply learned concepts.",
-      "Explored web accessibility and performance optimization techniques.",
-    ],
-  },
-  {
-    title: "Advanced JavaScript & React",
-    institution: "Specialized Courses",
-    icon: "⚛️",
-    iconBg: "#383E56",
-    date: "2021 - 2022",
-    points: [
-      "Deep dive into ES6+ features and modern JavaScript development patterns.",
-      "Mastered React.js including hooks, context API, and component lifecycle.",
-      "Learned state management with Redux and modern alternatives.",
-      "Studied testing methodologies and best practices for React applications.",
-      "Built complex single-page applications with routing and API integration.",
-    ],
-  },
-];
+const accentShape = PropTypes.oneOf(["primary", "secondary"]);
 
-const EducationCard = ({ education }) => {
+const EducationNode = ({ accent }) => (
+  <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border bg-bg-primary shadow-card">
+    <span
+      aria-hidden="true"
+      className={`h-2.5 w-2.5 rounded-full ${
+        accent === "primary" ? "bg-accent-primary" : "bg-accent-secondary"
+      }`}
+    />
+    <span
+      aria-hidden="true"
+      className={`absolute -inset-1 -z-10 rounded-full ${
+        accent === "primary"
+          ? "border border-accent-primary/40"
+          : "border border-accent-secondary/40"
+      }`}
+    />
+  </div>
+);
+
+EducationNode.propTypes = {
+  accent: accentShape.isRequired,
+};
+
+const EducationCard = ({ education, index }) => {
+  const accent = education.accent === "primary" ? "primary" : "secondary";
+  const dotColor = accent === "primary" ? "bg-accent-primary" : "bg-accent-secondary";
+
   return (
-    <VerticalTimelineElement
-      contentStyle={{
-        background: "#1d1836",
-        color: "#fff",
-      }}
-      contentArrowStyle={{ borderRight: "7px solid #232631" }}
-      date={education.date}
-      iconStyle={{ background: education.iconBg, fontSize: "1.5rem" }}
-      icon={
-        <div className="flex justify-center items-center w-full h-full">
-          <span style={{ fontSize: "1.5rem" }}>{education.icon}</span>
-        </div>
-      }
-    >
-      <div>
-        <h3 className="text-white text-[24px] font-bold">{education.title}</h3>
-        <p
-          className="text-secondary text-[16px] font-semibold"
-          style={{ margin: 0 }}
-        >
-          {education.institution}
-        </p>
+    <li className="relative grid grid-cols-[3rem_1fr] gap-4 sm:gap-6">
+      {/* Timeline rail */}
+      <div className="flex flex-col items-center">
+        <EducationNode accent={education.accent} />
+        <div
+          aria-hidden="true"
+          className="mt-3 w-px flex-1 self-stretch bg-gradient-to-b from-accent-primary/30 to-accent-secondary/30"
+        />
       </div>
 
-      <ul className="mt-5 list-disc ml-5 space-y-2">
-        {education.points.map((point, index) => (
-          <li
-            key={`education-point-${index}`}
-            className="text-white-100 text-[14px] pl-1 tracking-wider"
+      {/* Education card */}
+      <motion.div
+        variants={fadeIn("up", "spring", index * 0.12, 0.7)}
+        className="rounded-xl border border-border-light bg-bg-glass px-5 py-6 shadow-card sm:px-6"
+      >
+        <h3 className="text-lg font-semibold leading-snug text-text-primary">
+          {education.title}
+        </h3>
+        <p className="mt-1 text-sm font-medium text-text-secondary">
+          {education.institution}
+        </p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-text-muted">
+          <span>{education.type}</span>
+          <span aria-hidden="true" className="text-border-light">·</span>
+          <span>{education.location}</span>
+          <span aria-hidden="true" className="text-border-light">·</span>
+          <span
+            className={
+              accent === "primary"
+                ? "text-accent-primary"
+                : "text-accent-secondary"
+            }
           >
-            {point}
-          </li>
-        ))}
-      </ul>
-    </VerticalTimelineElement>
+            {education.date}
+          </span>
+        </div>
+
+        <ul className="mt-5 space-y-2.5">
+          {education.points.map((point, pointIndex) => (
+            <li
+              key={`edu-point-${index}-${pointIndex}`}
+              className="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary"
+            >
+              <span
+                aria-hidden="true"
+                className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`}
+              />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    </li>
   );
+};
+
+EducationCard.propTypes = {
+  education: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    institution: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    accent: accentShape.isRequired,
+    points: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+};
+
+const Certifications = ({ items }) => (
+  <motion.div variants={fadeIn("up", "spring", 0.2, 0.7)}>
+    <h3 className="text-2xl font-bold text-text-primary sm:text-3xl">
+      Certifications.
+    </h3>
+    <p className="mt-2 max-w-2xl text-sm text-text-secondary">
+      A curated set of hands-on AI, LLM, and engineering courses.
+    </p>
+    <ul className="mt-6 flex flex-wrap gap-2.5">
+      {items.map((cert) => (
+        <li key={cert}>
+          <span className="inline-block rounded-md border border-border-light bg-bg-glass px-3 py-1.5 font-mono text-[0.6875rem] font-medium text-text-primary transition-colors hover:border-accent-primary">
+            {cert}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </motion.div>
+);
+
+Certifications.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const Education = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={styles.sectionSubText}>My learning journey</p>
-        <h2 className={styles.sectionHeadText}>Education.</h2>
+        <p className="font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-text-secondary">
+          Foundations
+        </p>
+        <h2 className="mt-2 text-4xl font-bold leading-[1.1] text-text-primary sm:text-5xl lg:text-6xl">
+          Education.
+        </h2>
       </motion.div>
-      <div className="mt-12 sm:mt-20 flex flex-col">
-        <VerticalTimeline>
-          {educationData.map((education, index) => (
-            <EducationCard key={`education-${index}`} education={education} />
+
+      <motion.div
+        variants={staggerContainer(0.1, 0.12)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="mt-12"
+      >
+        <ul className="flex flex-col">
+          {education.map((entry, index) => (
+            <EducationCard
+              key={entry.title}
+              education={entry}
+              index={index}
+            />
           ))}
-        </VerticalTimeline>
-      </div>
+        </ul>
+
+        <div className="mt-12">
+          <Certifications items={certifications} />
+        </div>
+      </motion.div>
     </>
   );
 };

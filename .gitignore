@@ -28,6 +28,7 @@ dist-ssr
 # Documentation — only README on GitHub
 *.md
 !README.md
+!api/rag/corpus/**/*.md
 
 # Cursor config stays local
 .cursor/
