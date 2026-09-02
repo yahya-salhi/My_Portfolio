@@ -1,93 +1,262 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
-import { styles } from "../styles";
-import { github } from "../assets";
 import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 
-const ProjectCard = ({
-  index,
-  name,
-  description,
-  tags,
-  image,
-  source_code_link,
-}) => (
-  <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
-    <div className="bg-tertiary p-4 sm:p-5 rounded-2xl w-full xs:w-[320px] sm:w-[360px] transition-transform hover:scale-[1.02]">
-      <div className="relative w-full h-[230px]">
-        <img
-          src={image}
-          alt={`${name} project preview`}
-          width={360}
-          height={230}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover rounded-2xl"
-        />
+const resultItemClasses =
+  "flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary";
 
-        <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-          <button
-            type="button"
-            onClick={() => window.open(source_code_link, "_blank")}
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer border-0"
-            aria-label={`View ${name} source code on GitHub`}
-          >
-            <img
-              src={github}
-              alt=""
-              className="w-1/2 h-1/2 object-contain"
-            />
-          </button>
+const CaseStudyField = ({ label, children }) => (
+  <div>
+    <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-text-muted">
+      {label}
+    </p>
+    <p className="mt-2 text-sm leading-relaxed text-text-secondary">{children}</p>
+  </div>
+);
+
+CaseStudyField.propTypes = {
+  label: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+const ResultItem = ({ children }) => (
+  <li className={resultItemClasses}>
+    <span
+      aria-hidden="true"
+      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-secondary"
+    />
+    {children}
+  </li>
+);
+
+ResultItem.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+const CaseStudy = ({ id, title, project, reduced }) => {
+  return (
+    <motion.div
+      id={`case-study-${id}`}
+      role="region"
+      aria-label={`${title} case study`}
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: reduced ? 0 : 0.35, ease: "easeOut" }}
+      className="overflow-hidden"
+    >
+      <div className="mt-5 space-y-5 border-t border-border pt-5">
+        <CaseStudyField label="Problem">{project.problem}</CaseStudyField>
+        <CaseStudyField label="My role">{project.role}</CaseStudyField>
+        <CaseStudyField label="Solution">{project.solution}</CaseStudyField>
+        <div>
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-text-muted">
+            Results
+          </p>
+          <ul className="mt-2 space-y-2">
+            {project.results.map((result) => (
+              <ResultItem key={result}>{result}</ResultItem>
+            ))}
+          </ul>
         </div>
       </div>
+    </motion.div>
+  );
+};
 
-      <div className="mt-5">
-        <h3 className="text-white font-bold text-[20px] sm:text-[24px]">
-          {name}
-        </h3>
-        <p className="mt-2 text-secondary text-[12px] sm:text-[14px]">
-          {description}
-        </p>
+CaseStudy.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  project: PropTypes.shape({
+    problem: PropTypes.string.isRequired,
+    role: PropTypes.string.isRequired,
+    solution: PropTypes.string.isRequired,
+    results: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  reduced: PropTypes.bool,
+};
+
+const ProjectCard = ({ index, project, isOpen, onToggle, reduced }) => {
+  const { id, title, category, summary, tags, image, imageAlt, year, liveUrl, repoUrl, featured } =
+    project;
+
+  return (
+    <motion.article
+      variants={fadeIn("up", "spring", index * 0.15, 0.75)}
+      className="flex flex-col rounded-xl border border-border-light bg-bg-glass p-5 shadow-card transition-colors hover:border-accent-primary sm:p-6"
+    >
+      {image && (
+        <div className="overflow-hidden rounded-lg border border-border">
+          <img
+            src={image}
+            alt={imageAlt || `${title} preview`}
+            loading="lazy"
+            decoding="async"
+            className="aspect-3/2 w-full object-cover"
+          />
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="rounded-full border border-accent-primary/40 bg-accent-primary/10 px-2.5 py-1 font-mono text-[0.6875rem] text-text-primary">
+          {category}
+        </span>
+        {year && (
+          <span className="font-mono text-xs text-text-muted">{year}</span>
+        )}
+        {featured && (
+          <span className="rounded-full border border-border-light bg-bg-glass px-2.5 py-1 font-mono text-[0.6875rem] text-accent-secondary">
+            featured
+          </span>
+        )}
       </div>
+
+      <h3 className="mt-3 text-xl font-semibold text-text-primary">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-text-secondary">{summary}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <p
-            key={`${name}-${tag.name}`}
-            className={`text-[12px] sm:text-[14px] ${tag.color}`}
+          <span
+            key={`${id}-${tag}`}
+            className="rounded-md border border-border-light bg-bg-glass px-2.5 py-1 font-mono text-[0.6875rem] text-text-primary"
           >
-            #{tag.name}
-          </p>
+            {tag}
+          </span>
         ))}
       </div>
-    </div>
-  </motion.div>
-);
+
+      <div className="mt-auto pt-6">
+        {(liveUrl || repoUrl) && (
+          <div className="mb-3 flex flex-wrap gap-3">
+            {liveUrl && (
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border-light bg-bg-glass px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent-primary hover:shadow-glow"
+              >
+                Live demo ↗
+              </a>
+            )}
+            {repoUrl && (
+              <a
+                href={repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border-light bg-bg-glass px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent-primary hover:shadow-glow"
+              >
+                Source ↗
+              </a>
+            )}
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={`case-study-${id}`}
+          className="inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-border-light bg-bg-glass px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent-primary hover:bg-bg-glass-hover"
+        >
+          <span>Case study</span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`h-4 w-4 text-text-muted transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <CaseStudy id={id} title={title} project={project} reduced={reduced} />
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.article>
+  );
+};
+
+ProjectCard.propTypes = {
+  index: PropTypes.number.isRequired,
+  project: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    image: PropTypes.string,
+    imageAlt: PropTypes.string,
+    year: PropTypes.number,
+    liveUrl: PropTypes.string,
+    repoUrl: PropTypes.string,
+    featured: PropTypes.bool,
+  }).isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  reduced: PropTypes.bool,
+};
 
 const Works = () => {
+  const [expandedId, setExpandedId] = useState(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (expandedId === null) return undefined;
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setExpandedId(null);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [expandedId]);
+
+  const toggle = (id) =>
+    setExpandedId((current) => (current === id ? null : id));
+
   return (
     <div className="w-full">
       <motion.div variants={textVariant()}>
-        <p className={styles.sectionSubText}>My work</p>
-        <h2 className={styles.sectionHeadText}>Projects.</h2>
+        <p className="font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-text-secondary">
+          Selected work
+        </p>
+        <h2 className="mt-2 text-4xl font-bold leading-[1.1] text-text-primary sm:text-5xl lg:text-6xl">
+          Featured projects.
+        </h2>
       </motion.div>
 
-      <div className="w-full flex">
-        <motion.p
-          variants={fadeIn("", "", 0.1, 1)}
-          className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
-        >
-          Following projects showcases my skills and experience through
-          real-world examples of my work. Each project is briefly described with
-          links to code repositories and live demos in it.
-        </motion.p>
-      </div>
+      <motion.p
+        variants={fadeIn("", "", 0.1, 1)}
+        className="mt-4 max-w-3xl text-base leading-relaxed text-text-secondary"
+      >
+        My strongest builds, selected for depth across AI, full-stack, and
+        embedded work. Open a case study to read the problem, my role, the
+        solution, and the results.
+      </motion.p>
 
-      <div className="mt-12 sm:mt-20 flex flex-wrap gap-4 sm:gap-7 justify-center">
+      <div className="mt-12 grid items-start gap-4 sm:grid-cols-2">
         {projects.map((project, index) => (
-          <ProjectCard key={`project-${index}`} index={index} {...project} />
+          <ProjectCard
+            key={project.id}
+            index={index}
+            project={project}
+            isOpen={expandedId === project.id}
+            onToggle={() => toggle(project.id)}
+            reduced={reduced}
+          />
         ))}
       </div>
     </div>

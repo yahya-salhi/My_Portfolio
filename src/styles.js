@@ -9,7 +9,6 @@
  *
  * Consumers (as of the semantic refactor):
  *   - src/hoc/SectionWrapper.jsx        (styles.padding)
- *   - src/components/Works.jsx          (sectionSubText / sectionHeadText)
  *   - src/components/SectionFallback.jsx (padding)
  */
 const styles = {

@@ -14,8 +14,6 @@ import {
   threejs,
 } from "../assets";
 
-const projectImage = (file) => `${import.meta.env.BASE_URL}projects/${file}`;
-
 export const navLinks = [
   {
     id: "about",
@@ -351,130 +349,109 @@ const availability = {
 
 const projects = [
   {
-    name: "UpKeepPro",
-    description:
-      "A comprehensive maintenance and facility management solution designed to streamline operations, track assets, and optimize maintenance workflows. Built with modern web technologies.",
-    tags: [
-      {
-        name: "javascript",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "nodejs",
-        color: "green-text-gradient",
-      },
-      {
-        name: "mongodb",
-        color: "pink-text-gradient",
-      },
+    id: "jobpilot",
+    title: "JobPilot",
+    category: "AI Full-Stack",
+    summary:
+      "Your AI-powered job-hunting assistant — automated discovery, GPT-4o match scoring, and autonomous company research.",
+    problem:
+      "Job hunting is one of the most repetitive and time-consuming tasks a developer faces: reading dozens of postings, judging fit, and researching companies from scratch takes hours.",
+    role:
+      "Designed and built the entire product — onboarding, the GPT-4o scoring pipeline, the autonomous research agents, and the analytics layer.",
+    solution:
+      "A Next.js 16 (App Router, Turbopack) + TypeScript app backed by InsForge (PostgreSQL, OAuth, Storage, Edge Functions). GPT-4o scores each job against the candidate's profile and resume via OpenRouter; Adzuna supplies live job data; Browserbase + Stagehand power the company dossiers; PostHog (with HogQL) drives the analytics dashboard.",
+    results: [
+      "Automates the full pre-apply pipeline: discovery → AI match scoring → company research → informed apply.",
+      "Scores every job 0–100 with GPT-4o against the profile and uploaded resume, with skill-by-skill reasoning.",
+      "Builds live company dossiers (culture, tech stack, interview prep) via autonomous browser agents.",
     ],
-    image: projectImage("carrent.webp"),
-    source_code_link: "https://github.com/yahya-salhi/UpKeepPro",
+    tags: ["next.js", "typescript", "tailwind", "gpt-4o", "postgresql", "posthog"],
+    image: "/projects/jop.png",
+    imageAlt: "JobPilot job match scoring dashboard",
+    year: 2026,
+    liveUrl: null,
+    repoUrl: null,
+    featured: true,
+    // TODO: Owner input needed — JobPilot live demo + repository URLs
   },
   {
-    name: "MERN Store App",
-    description:
-      "A modern product store built with React and advanced state management. Features include product management, shopping cart, user authentication, and responsive design.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "typescript",
-        color: "green-text-gradient",
-      },
-      {
-        name: "tailwindcss",
-        color: "pink-text-gradient",
-      },
+    id: "titanz-drone",
+    title: "DIY Quadcopter Drone",
+    category: "Embedded",
+    summary:
+      "A custom-built quadcopter flight controller — sensor-fused attitude estimation and PID stabilization in C.",
+    problem:
+      "Off-the-shelf flight controllers are opaque and unmodifiable. Building the control loop from scratch means owning the maths, the sensor pipeline, and the tuning — no black boxes.",
+    role:
+      "Designed the custom flight controller in C — combining sensor fusion and PID stabilization for autonomous flight.",
+    solution:
+      "A hand-built quadcopter running a custom C flight controller with 250Hz sensor fusion and closed-loop PID stabilization, developed as part of the Project TITANZ UAV initiative.",
+    results: [
+      "250Hz sensor-fused attitude estimation for stable, responsive flight.",
+      "Closed-loop PID control tuned for autonomous stabilization.",
+      "Ground-up ownership of the flight-control stack — no proprietary black boxes.",
     ],
-    image: projectImage("jobit.webp"),
-    source_code_link: "https://github.com/yahya-salhi/mern-app",
+    tags: ["c", "embedded", "pwm", "pid", "imu", "sensor-fusion"],
+    image: "/projects/drone.png",
+    imageAlt: "Custom-built quadcopter drone with flight controller",
+    year: null,
+    liveUrl: null,
+    repoUrl: null,
+    featured: false,
+    // TODO: Owner input needed — confirm year + any demo/repo links for the drone build
   },
   {
-    name: "WorldWise",
-    description:
-      "A React.js application for tracking your travels around the world. Features interactive maps, city tracking, and travel statistics with a modern user interface.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "typescript",
-        color: "green-text-gradient",
-      },
-      {
-        name: "css",
-        color: "pink-text-gradient",
-      },
+    id: "worldwise",
+    title: "WorldWise",
+    category: "Full-Stack",
+    summary:
+      "A React application for tracking travels around the world — interactive maps, city tracking, and travel statistics.",
+    problem:
+      "Keeping track of everywhere you've been and planning where to go next is scattered across notes, photos, and memory.",
+    role:
+      "Built the application end-to-end — the interactive map, city tracking, and travel statistics.",
+    solution:
+      "A React.js (TypeScript) application with an interactive map, city logging, and aggregated travel statistics behind a modern, responsive interface.",
+    results: [
+      "Pin and manage visited cities on an interactive world map.",
+      "Aggregate travel statistics across your logged destinations.",
+      "Clean, responsive UI for planning and reviewing trips.",
     ],
-    image: projectImage("tripguide.webp"),
-    source_code_link: "https://github.com/yahya-salhi/worldwise",
+    tags: ["react", "typescript", "maps", "css"],
+    image: "/projects/world.png",
+    imageAlt: "WorldWise travel tracking interactive map",
+    year: null,
+    liveUrl: null,
+    repoUrl: "https://github.com/yahya-salhi/worldwise",
+    featured: false,
+    // TODO: Owner input needed — confirm WorldWise year + live demo URL (repo is verified)
   },
   {
-    name: "Save Gaza",
-    description:
-      "A web application dedicated to raising awareness and advocating for justice in Gaza. Built with React.js to spread awareness and provide information.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "javascript",
-        color: "green-text-gradient",
-      },
-      {
-        name: "css",
-        color: "pink-text-gradient",
-      },
+    id: "yezz",
+    title: "YeZZi",
+    category: "Mobile + AI",
+    summary:
+      "A mobile-first diabetes management companion — glucose tracking, GPT-4o Vision food logging, and exercise, all on-device.",
+    problem:
+      "Managing diabetes means tracking blood sugar, food choices, and physical activity with constant vigilance. People piece together a glucose log, a food diary, and a fitness tracker — YeZZ brings all three into one app and connects the dots: high post-meal glucose? Here's what you ate.",
+    role:
+      "Designed and built the entire product — the on-device data model, GPT-4o Vision food pipeline, IDF-based decision support, and the freemium monetization layer.",
+    solution:
+      "An Expo React Native app with all data on-device via exo-sqlite (no account, no cloud). GPT-4o Vision identifies meals from a photo and estimates nutrition + blood-glucose impact through an anonymous, quota'd API proxy. Readings are classified against IDF thresholds with pattern detection and color-coded decision cards; RevenueCat powers the YeZZi Plus subscription; Aptabase tracks anonymous feature usage only.",
+    results: [
+      "Log a fasting or post-meal reading in under 10 seconds, with mg/dL ⇄ mmol/L support.",
+      "GPT-4o Vision food recognition with carb/protein/fat + glucose-impact estimates, linked to real post-meal readings for actual-vs-estimated comparison.",
+      "Rolling averages (7/14/30/90-day), trend chart, and 3+ consecutive-high pattern alerts.",
+      "100% on-device storage (SQLite) — no sign-up, backup/export to a local file, CSV export free + PDF doctor report with YeZZi Plus.",
     ],
-    image: projectImage("carrent.webp"),
-    source_code_link: "https://github.com/yahya-salhi/save_gaza",
-  },
-  {
-    name: "React Quiz App",
-    description:
-      "An interactive quiz application built with React.js featuring multiple choice questions, score tracking, and responsive design for an engaging user experience.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "javascript",
-        color: "green-text-gradient",
-      },
-      {
-        name: "css",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: projectImage("jobit.webp"),
-    source_code_link: "https://github.com/yahya-salhi/React-Quiz",
-  },
-  {
-    name: "UsePopCorn",
-    description:
-      "A movie database application built with React.js that allows users to search for movies, view details, and manage their watchlist with a clean interface.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "javascript",
-        color: "green-text-gradient",
-      },
-      {
-        name: "api",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: projectImage("tripguide.webp"),
-    source_code_link: "https://github.com/yahya-salhi/UsePopCorn",
+    tags: ["react-native", "expo", "expo-sqlite", "typescript", "gpt-4o", "revenuecat"],
+    image: "/projects/yezzi.png",
+    imageAlt: "YeZZ diabetes management app screens",
+    year: 2026,
+    liveUrl: null,
+    repoUrl: null,
+    featured: false,
+    // TODO: Owner input needed — YeZZ app screenshots + any demo/repo links (schema is verified from the product spec)
   },
 ];
 
