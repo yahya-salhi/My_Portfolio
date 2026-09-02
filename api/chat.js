@@ -160,29 +160,36 @@ async function callOpenRouter(messages, context, externalSignal) {
   }
 }
 
-export default async function handler(req) {
-  // CORS preflight.
-  if (req.method === "OPTIONS") {
-    return json({ ok: true });
-  }
-  if (req.method !== "POST") {
-    return json({ error: "method_not_allowed" }, 405);
-  }
-
-  try {
-    requireKey();
-    return await run(req);
-  } catch (err) {
-    const message = err?.message;
-    console.error("[chat] uncaught:", message);
-    if (message === "rate_limited") return json({ error: "rate_limited" }, 429);
-    if (message === "unauthorized") return json({ error: "chat_unavailable" }, 500);
-    if (message === "AbortError" || message === "empty_response" || message === "upstream_error") {
-      return json({ error: "chat_unavailable" }, 502);
+// Vercel Functions support the Web-standard `fetch` export — a default object
+// with an async `fetch(request)` method that receives a Web `Request` and
+// returns a `Response`. This is the correct signature for Vercel's Node/Edge
+// runtimes (a bare default function returning a `Response` is ignored on the
+// Node runtime — Vercel warns "default export returned a Response" and drops it).
+export default {
+  async fetch(req) {
+    // CORS preflight.
+    if (req.method === "OPTIONS") {
+      return json({ ok: true });
     }
-    return json({ error: "chat_unavailable" }, 500);
-  }
-}
+    if (req.method !== "POST") {
+      return json({ error: "method_not_allowed" }, 405);
+    }
+
+    try {
+      requireKey();
+      return await run(req);
+    } catch (err) {
+      const message = err?.message;
+      console.error("[chat] uncaught:", message);
+      if (message === "rate_limited") return json({ error: "rate_limited" }, 429);
+      if (message === "unauthorized") return json({ error: "chat_unavailable" }, 500);
+      if (message === "AbortError" || message === "empty_response" || message === "upstream_error") {
+        return json({ error: "chat_unavailable" }, 502);
+      }
+      return json({ error: "chat_unavailable" }, 500);
+    }
+  },
+};
 
 function requireKey() {
   if (!API_KEY) {
