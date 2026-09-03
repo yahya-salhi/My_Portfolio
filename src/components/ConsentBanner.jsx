@@ -43,7 +43,7 @@ const ConsentBanner = () => {
               This site stores GitHub stats locally in your browser. No tracking
               cookies are used.{" "}
               <a
-                href="/#privacy"
+                href="/#/privacy"
                 className="font-medium text-text-accent underline underline-offset-2 transition-colors hover:text-accent-secondary"
               >
                 Privacy policy
