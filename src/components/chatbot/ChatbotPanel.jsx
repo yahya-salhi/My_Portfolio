@@ -1,13 +1,15 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 import ChatMessage from "./ChatMessage";
 import { useChat } from "./useChat";
+import { useChatPanelBehavior } from "./useChatPanelBehavior";
 
 /* ==========================================================================
    ChatbotPanel
-   The lazy-loaded chat dialog.
+   The lazy-loaded chat dialog. Pure layout + rendering; all behavior
+   (focus, Escape, outside-click, auto-scroll, resize, form submit) lives in
+   useChatPanelBehavior.
    - Desktop: 380x500 glass corner popover (bottom-right, above launcher).
    - Mobile (≤ sm): full-screen overlay.
    - role="dialog" + aria-modal + Escape / outside-click to close.
@@ -58,8 +60,6 @@ const SendIcon = () => (
 
 const ChatbotPanel = ({ open, onClose, launcherRef }) => {
   const reduced = useReducedMotion();
-  const panelRef = useRef(null);
-  const inputRef = useRef(null);
 
   const {
     messages,
@@ -73,65 +73,22 @@ const ChatbotPanel = ({ open, onClose, launcherRef }) => {
     hasHistory,
   } = useChat();
 
-  useEffect(() => {
-    if (open) {
-      inputRef.current?.focus();
-    } else {
-      launcherRef.current?.focus();
-    }
-  }, [open, launcherRef]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        if (isLoading) stop();
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose, isLoading, stop]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event) => {
-      if (panelRef.current && !panelRef.current.contains(event.target)) {
-        if (isLoading) stop();
-        onClose();
-      }
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [open, onClose, isLoading, stop]);
-
-  useEffect(() => {
-    if (!open || isLoading) return;
-    const list = panelRef.current?.querySelector("[data-chat-scroll]");
-    if (list) list.scrollTop = list.scrollHeight;
-  }, [open, messages, isLoading]);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (isLoading) return;
-    send();
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      if (!isLoading) send();
-    }
-  };
-
-  const autoResize = (element) => {
-    if (!element) return;
-    element.style.height = "auto";
-    element.style.height = `${element.scrollHeight}px`;
-  };
+  const { panelRef, inputRef, handleSubmit, handleKeyDown, autoResize } =
+    useChatPanelBehavior({
+      open,
+      onClose,
+      launcherRef,
+      messages,
+      send,
+      stop,
+      isLoading,
+    });
 
   const suggestionsVisible = !hasHistory && !isLoading;
+  const close = () => {
+    if (isLoading) stop();
+    onClose();
+  };
 
   return (
     <AnimatePresence>
@@ -159,10 +116,7 @@ const ChatbotPanel = ({ open, onClose, launcherRef }) => {
             </div>
             <button
               type="button"
-              onClick={() => {
-                if (isLoading) stop();
-                onClose();
-              }}
+              onClick={close}
               aria-label="Close chatbot"
               className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-glass-hover hover:text-text-primary"
             >
