@@ -90,7 +90,7 @@ const TerminalView = () => {
         </span>
       </div>
 
-      <div className="p-5 font-mono text-sm leading-relaxed">
+      <div className="min-h-[140px] p-5 font-mono text-sm leading-relaxed">
         <div>
           <span className="text-terminal-max">➜</span>{" "}
           <span className="text-text-secondary">~</span>{" "}

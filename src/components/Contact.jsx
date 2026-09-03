@@ -243,13 +243,19 @@ const Contact = () => {
               <input
                 type="text"
                 name="name"
+                id="contact-name"
+                autoComplete="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="What's your name?"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "contact-name-error" : undefined}
                 className={fieldClasses}
               />
               {errors.name && (
-                <span className="text-xs text-error">{errors.name}</span>
+                <span id="contact-name-error" className="text-xs text-error">
+                  {errors.name}
+                </span>
               )}
             </label>
 
@@ -260,13 +266,19 @@ const Contact = () => {
               <input
                 type="email"
                 name="email"
+                id="contact-email"
+                autoComplete="email"
                 value={form.email}
                 onChange={handleChange}
                 placeholder="your@email.com"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "contact-email-error" : undefined}
                 className={fieldClasses}
               />
               {errors.email && (
-                <span className="text-xs text-error">{errors.email}</span>
+                <span id="contact-email-error" className="text-xs text-error">
+                  {errors.email}
+                </span>
               )}
             </label>
 
@@ -277,13 +289,19 @@ const Contact = () => {
               <textarea
                 rows={6}
                 name="message"
+                id="contact-message"
+                autoComplete="off"
                 value={form.message}
                 onChange={handleChange}
                 placeholder="What would you like to discuss?"
+                aria-invalid={!!errors.message}
+                aria-describedby={errors.message ? "contact-message-error" : undefined}
                 className={`${fieldClasses} resize-none`}
               />
               {errors.message && (
-                <span className="text-xs text-error">{errors.message}</span>
+                <span id="contact-message-error" className="text-xs text-error">
+                  {errors.message}
+                </span>
               )}
             </label>
 

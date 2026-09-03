@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 
 import { services, stackLayers, proofPoints } from "../constants";
@@ -19,6 +20,13 @@ const CapabilityRow = ({ index, title, description, tag }) => (
   </motion.div>
 );
 
+CapabilityRow.propTypes = {
+  index: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  tag: PropTypes.string.isRequired,
+};
+
 const StackLayer = ({ layer, name, note, last }) => (
   <div className="flex min-w-0 flex-1 items-center">
     <div className="flex flex-1 flex-col items-start gap-2">
@@ -34,6 +42,13 @@ const StackLayer = ({ layer, name, note, last }) => (
   </div>
 );
 
+StackLayer.propTypes = {
+  layer: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  note: PropTypes.string.isRequired,
+  last: PropTypes.bool,
+};
+
 const ProofPoint = ({ index, title, detail }) => (
   <motion.div
     variants={fadeIn("right", "spring", index * 0.1, 0.6)}
@@ -48,6 +63,12 @@ const ProofPoint = ({ index, title, detail }) => (
     </div>
   </motion.div>
 );
+
+ProofPoint.propTypes = {
+  index: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  detail: PropTypes.string.isRequired,
+};
 
 const About = () => {
   return (

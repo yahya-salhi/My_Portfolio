@@ -52,7 +52,9 @@ const ChatbotButton = ({ open, onToggle, buttonRef }) => {
       aria-label={label}
       aria-expanded={open}
       aria-controls="chatbot-panel"
-      className="chatbot-launcher primary-gradient fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full text-text-primary shadow-glow transition-transform duration-200 hover:scale-105 active:scale-95"
+      className={`chatbot-launcher primary-gradient fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full text-text-primary shadow-glow transition-transform duration-200 hover:scale-105 active:scale-95 ${
+        open ? "max-sm:hidden" : ""
+      }`}
     >
       <span className="sr-only">{label}</span>
       {open ? <CloseIcon /> : <ChatIcon />}

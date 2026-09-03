@@ -154,7 +154,7 @@ const ChatbotPanel = ({ open, onClose, launcherRef }) => {
             <div className="flex items-center gap-2.5">
               <span className="accent-dot h-2 w-2 rounded-full" aria-hidden="true" />
               <p className="text-sm font-semibold text-text-primary">
-                Ask Yahya's assistant
+                Ask Yahya&apos;s assistant
               </p>
             </div>
             <button

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 
 import { skillCategories } from "../constants";
@@ -9,6 +10,10 @@ const SkillTag = ({ name }) => (
     {name}
   </span>
 );
+
+SkillTag.propTypes = {
+  name: PropTypes.string.isRequired,
+};
 
 const SkillCard = ({ index, title, accent, evidence, skills }) => {
   const dotColor =
@@ -37,6 +42,14 @@ const SkillCard = ({ index, title, accent, evidence, skills }) => {
       </div>
     </motion.div>
   );
+};
+
+SkillCard.propTypes = {
+  index: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  accent: PropTypes.string,
+  evidence: PropTypes.string.isRequired,
+  skills: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const Skills = () => {
